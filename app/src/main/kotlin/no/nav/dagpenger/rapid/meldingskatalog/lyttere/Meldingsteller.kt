@@ -1,5 +1,6 @@
 package no.nav.dagpenger.rapid.meldingskatalog.lyttere
 
+import mu.KotlinLogging
 import no.nav.dagpenger.rapid.meldingskatalog.IdentifisertMelding
 import no.nav.dagpenger.rapid.meldingskatalog.Meldingslytter
 
@@ -17,10 +18,21 @@ class Meldingsteller : Meldingslytter {
 
     private fun tellUkjentMelding() = ++ukjenteMeldinger
     override fun gjenkjentMelding(melding: IdentifisertMelding) {
-        tellMelding(melding.navn)
+        tellMelding(melding.navn).also {
+            logger.info {
+                "Foreløpig antall meldinger: \n" +
+                    identifiserteMeldinger.entries.sortedByDescending { it.value }.joinToString("\n") {
+                        it.key + ": " + it.value
+                    }
+            }
+        }
     }
 
     override fun ukjentMelding(melding: String) {
         tellUkjentMelding()
+    }
+
+    private companion object {
+        val logger = KotlinLogging.logger { }
     }
 }
