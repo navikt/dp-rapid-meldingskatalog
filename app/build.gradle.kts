@@ -5,15 +5,19 @@ plugins {
 
 repositories {
     mavenCentral()
+    maven("https://github-package-registry-mirror.gc.nav.no/cached/maven-release")
 }
 
 dependencies {
-    implementation("com.google.guava:guava:32.1.1-jre")
+    implementation(project(":model"))
+    implementation(libs.kotlin.logging)
+    implementation(libs.rapids.and.rivers)
+    testImplementation(kotlin("test"))
 }
 
 tasks {
     test {
-        useJunitPlatform()
+        useJUnitPlatform()
     }
 }
 
@@ -24,5 +28,5 @@ java {
 }
 
 application {
-    mainClass.set("dp.rapid.system.AppKt")
+    mainClass.set("no.nav.dagpenger.rapid.system.AppKt")
 }
