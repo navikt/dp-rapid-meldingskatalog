@@ -9,7 +9,7 @@ repositories {
 }
 
 dependencies {
-    implementation(project(":model"))
+    implementation(project(":meldingskatalog"))
     implementation(libs.kotlin.logging)
     implementation(libs.rapids.and.rivers)
     testImplementation(kotlin("test"))
@@ -20,7 +20,7 @@ tasks {
         useJUnitPlatform()
     }
     jar {
-        dependsOn(":model:jar")
+        dependsOn(":meldingskatalog:jar")
 
         manifest {
             attributes["Main-Class"] = application.mainClass

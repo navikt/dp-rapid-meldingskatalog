@@ -1,9 +1,8 @@
 package no.nav.dagpenger.rapid.meldingskatalog
 
 import mu.KotlinLogging
-import no.nav.dagpenger.rapid.meldingskatalog.alarm.KombinertLoggPublisher
-import no.nav.dagpenger.rapid.meldingskatalog.alarm.LoggAlarmPublisher
-import no.nav.dagpenger.rapid.meldingskatalog.river.MeldingskatalogSink
+import no.nav.dagpenger.rapid.meldingskatalog.lyttere.Meldingslogger
+import no.nav.dagpenger.rapid.meldingskatalog.lyttere.Meldingsteller
 import no.nav.helse.rapids_rivers.RapidApplication
 import no.nav.helse.rapids_rivers.RapidsConnection
 
@@ -13,14 +12,10 @@ internal class ApplicationBuilder(configuration: Map<String, String>) : RapidsCo
 
     init {
         rapidsConnection.register(this)
-        val alarmPublisher = KombinertLoggPublisher(
-            LoggAlarmPublisher(),
-            // KafkaAlarmPublisher(rapidsConnection),
-        )
-        MeldingskatalogSink(
-            rapidsConnection,
-            TellendeMeldingsmottak(kjenteMeldinger, alarmPublisher),
-        )
+        Meldingskatalog(rapidsConnection).apply { kjenteMeldinger() }.also {
+            it.leggTilLytter(Meldingslogger())
+            it.leggTilLytter(Meldingsteller())
+        }
     }
 
     fun start() {

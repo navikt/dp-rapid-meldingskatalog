@@ -5,7 +5,7 @@ plugins {
 
 rootProject.name = "dp-rapid-meldingskatalog"
 include("app")
-include("model")
+include("meldingskatalog")
 
 dependencyResolutionManagement {
     repositories {
