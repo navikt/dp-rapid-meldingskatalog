@@ -19,12 +19,21 @@ tasks {
     test {
         useJUnitPlatform()
     }
+    jar {
+        dependsOn(":model:jar")
+
+        manifest {
+            attributes["Main-Class"] = application.mainClass
+        }
+
+        archiveBaseName.set("app")
+        duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+        from(configurations.runtimeClasspath.get().map { if (it.isDirectory) it else zipTree(it) })
+    }
 }
 
-java {
-    toolchain {
-        languageVersion.set(JavaLanguageVersion.of(17))
-    }
+kotlin {
+    jvmToolchain(17)
 }
 
 application {
