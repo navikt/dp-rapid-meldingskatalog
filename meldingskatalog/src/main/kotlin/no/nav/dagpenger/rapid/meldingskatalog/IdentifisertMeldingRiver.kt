@@ -28,6 +28,7 @@ internal abstract class IdentifisertMeldingRiver(
                     "application_not_ready",
                     "application_stop",
                     "application_down",
+                    "application_up",
                 ),
             )
         }
