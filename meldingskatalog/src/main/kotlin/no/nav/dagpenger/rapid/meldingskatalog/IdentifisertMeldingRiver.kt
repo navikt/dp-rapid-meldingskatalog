@@ -16,8 +16,7 @@ internal abstract class IdentifisertMeldingRiver(
     private val meldingskatalog: Meldingskatalog,
 ) : River.PacketValidation {
     private val river = River(rapidsConnection).apply {
-        validate { it.rejectValue("@event_name", "ping") }
-        validate { it.rejectValue("@event_name", "aktivitetslogg") }
+        validate { it.rejectValues("@event_name", listOf("ping", "pong", "aktivitetslogg")) }
     }
     protected abstract val eventName: String
     protected abstract val riverName: String
