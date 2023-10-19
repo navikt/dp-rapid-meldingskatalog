@@ -1,0 +1,11 @@
+kafka_pool: nav-dev
+
+wonderwalled: true
+
+gcp:
+  sql:
+    tier: db-custom-1-3840
+
+ingresses: |
+  ingresses:
+    - https://dp-rapid-meldingskatalog.intern.dev.nav.no

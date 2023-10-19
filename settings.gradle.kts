@@ -3,7 +3,7 @@ plugins {
     id("org.gradle.toolchains.foojay-resolver-convention") version "0.4.0"
 }
 
-rootProject.name = "dp-rapid-system"
+rootProject.name = "dp-rapid-meldingskatalog"
 include("app")
 include("model")
 
@@ -17,4 +17,3 @@ dependencyResolutionManagement {
         }
     }
 }
-include("model")
