@@ -1,6 +1,6 @@
-package no.nav.dagpenger.rapid.system.alarm
+package no.nav.dagpenger.rapid.meldingskatalog.alarm
 
-import no.nav.dagpenger.rapid.system.AlarmPublisher
+import no.nav.dagpenger.rapid.meldingskatalog.AlarmPublisher
 
 class KombinertLoggPublisher(vararg alarmer: AlarmPublisher) : AlarmPublisher {
     private val alarmer = alarmer.toSet()

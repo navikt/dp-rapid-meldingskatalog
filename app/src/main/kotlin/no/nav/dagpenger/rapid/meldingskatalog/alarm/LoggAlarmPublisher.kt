@@ -1,7 +1,7 @@
-package no.nav.dagpenger.rapid.system.alarm
+package no.nav.dagpenger.rapid.meldingskatalog.alarm
 
 import mu.KotlinLogging
-import no.nav.dagpenger.rapid.system.AlarmPublisher
+import no.nav.dagpenger.rapid.meldingskatalog.AlarmPublisher
 
 internal class LoggAlarmPublisher : AlarmPublisher {
     private companion object {

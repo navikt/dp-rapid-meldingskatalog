@@ -1,10 +1,9 @@
-package no.nav.dagpenger.rapid.system
+package no.nav.dagpenger.rapid.meldingskatalog
 
 import mu.KotlinLogging
-import no.nav.dagpenger.rapid.system.alarm.KafkaAlarmPublisher
-import no.nav.dagpenger.rapid.system.alarm.KombinertLoggPublisher
-import no.nav.dagpenger.rapid.system.alarm.LoggAlarmPublisher
-import no.nav.dagpenger.rapid.system.river.MeldingskatalogSink
+import no.nav.dagpenger.rapid.meldingskatalog.alarm.KombinertLoggPublisher
+import no.nav.dagpenger.rapid.meldingskatalog.alarm.LoggAlarmPublisher
+import no.nav.dagpenger.rapid.meldingskatalog.river.MeldingskatalogSink
 import no.nav.helse.rapids_rivers.RapidApplication
 import no.nav.helse.rapids_rivers.RapidsConnection
 

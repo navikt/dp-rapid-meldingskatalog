@@ -28,5 +28,5 @@ java {
 }
 
 application {
-    mainClass.set("no.nav.dagpenger.rapid.system.AppKt")
+    mainClass.set("no.nav.dagpenger.rapid.meldingskatalog.AppKt")
 }

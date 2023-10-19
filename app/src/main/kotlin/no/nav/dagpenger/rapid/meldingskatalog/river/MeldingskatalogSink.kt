@@ -1,6 +1,6 @@
-package no.nav.dagpenger.rapid.system.river
+package no.nav.dagpenger.rapid.meldingskatalog.river
 
-import no.nav.dagpenger.rapid.system.Meldingsmottak
+import no.nav.dagpenger.rapid.meldingskatalog.Meldingsmottak
 import no.nav.helse.rapids_rivers.JsonMessage
 import no.nav.helse.rapids_rivers.MessageContext
 import no.nav.helse.rapids_rivers.RapidsConnection

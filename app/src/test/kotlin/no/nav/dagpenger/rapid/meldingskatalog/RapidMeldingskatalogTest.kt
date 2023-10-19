@@ -1,9 +1,9 @@
-package no.nav.dagpenger.rapid.system
+package no.nav.dagpenger.rapid.meldingskatalog
 
-import no.nav.dagpenger.rapid.system.alarm.KafkaAlarmPublisher
-import no.nav.dagpenger.rapid.system.melding.HendelseMelding
-import no.nav.dagpenger.rapid.system.melding.RapidsMelding
-import no.nav.dagpenger.rapid.system.meldingskatalog.InMemoryMeldingskatalog
+import no.nav.dagpenger.rapid.meldingskatalog.alarm.KafkaAlarmPublisher
+import no.nav.dagpenger.rapid.meldingskatalog.melding.HendelseMelding
+import no.nav.dagpenger.rapid.meldingskatalog.melding.RapidsMelding
+import no.nav.dagpenger.rapid.meldingskatalog.meldingskatalog.InMemoryMeldingskatalog
 import no.nav.helse.rapids_rivers.testsupport.TestRapid
 import org.intellij.lang.annotations.Language
 import org.junit.jupiter.api.Assertions.assertSame

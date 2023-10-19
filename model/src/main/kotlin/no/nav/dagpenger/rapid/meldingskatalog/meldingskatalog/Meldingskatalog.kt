@@ -1,6 +1,6 @@
-package no.nav.dagpenger.rapid.system.meldingskatalog
+package no.nav.dagpenger.rapid.meldingskatalog.meldingskatalog
 
-import no.nav.dagpenger.rapid.system.melding.Melding
+import no.nav.dagpenger.rapid.meldingskatalog.melding.Melding
 
 interface Meldingskatalog {
     fun leggTilMelding(melding: Melding): Boolean

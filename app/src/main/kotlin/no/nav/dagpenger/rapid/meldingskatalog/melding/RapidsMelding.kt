@@ -1,6 +1,6 @@
-package no.nav.dagpenger.rapid.system.melding
+package no.nav.dagpenger.rapid.meldingskatalog.melding
 
-import no.nav.dagpenger.rapid.system.dsl.MeldingskatalogDSL
+import no.nav.dagpenger.rapid.meldingskatalog.dsl.MeldingskatalogDSL
 import no.nav.helse.rapids_rivers.JsonMessage
 import no.nav.helse.rapids_rivers.MessageProblems
 import no.nav.helse.rapids_rivers.River

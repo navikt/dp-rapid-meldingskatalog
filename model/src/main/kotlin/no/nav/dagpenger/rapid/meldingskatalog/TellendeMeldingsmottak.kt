@@ -1,8 +1,8 @@
-package no.nav.dagpenger.rapid.system
+package no.nav.dagpenger.rapid.meldingskatalog
 
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-import no.nav.dagpenger.rapid.system.melding.Melding
-import no.nav.dagpenger.rapid.system.meldingskatalog.Meldingskatalog
+import no.nav.dagpenger.rapid.meldingskatalog.melding.Melding
+import no.nav.dagpenger.rapid.meldingskatalog.meldingskatalog.Meldingskatalog
 
 class TellendeMeldingsmottak(
     private val meldingskatalog: Meldingskatalog,

@@ -1,7 +1,7 @@
-package no.nav.dagpenger.rapid.system
+package no.nav.dagpenger.rapid.meldingskatalog
 
-import no.nav.dagpenger.rapid.system.melding.HendelseMelding
-import no.nav.dagpenger.rapid.system.meldingskatalog.InMemoryMeldingskatalog
+import no.nav.dagpenger.rapid.meldingskatalog.melding.HendelseMelding
+import no.nav.dagpenger.rapid.meldingskatalog.meldingskatalog.InMemoryMeldingskatalog
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test

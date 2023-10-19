@@ -1,4 +1,4 @@
-package no.nav.dagpenger.rapid.system
+package no.nav.dagpenger.rapid.meldingskatalog
 
 fun main() {
     ApplicationBuilder(System.getenv()).start()

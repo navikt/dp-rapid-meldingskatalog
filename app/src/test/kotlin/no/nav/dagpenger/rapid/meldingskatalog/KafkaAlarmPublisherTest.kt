@@ -1,6 +1,6 @@
-package no.nav.dagpenger.rapid.system
+package no.nav.dagpenger.rapid.meldingskatalog
 
-import no.nav.dagpenger.rapid.system.alarm.KafkaAlarmPublisher
+import no.nav.dagpenger.rapid.meldingskatalog.alarm.KafkaAlarmPublisher
 import no.nav.helse.rapids_rivers.testsupport.TestRapid
 import org.junit.jupiter.api.Assertions.assertSame
 import org.junit.jupiter.api.Test

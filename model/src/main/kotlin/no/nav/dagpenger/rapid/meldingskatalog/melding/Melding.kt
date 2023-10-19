@@ -1,4 +1,4 @@
-package no.nav.dagpenger.rapid.system.melding
+package no.nav.dagpenger.rapid.meldingskatalog.melding
 
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 
