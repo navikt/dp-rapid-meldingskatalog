@@ -8,8 +8,8 @@ private class BehovRiver(
     rapidsConnection: RapidsConnection,
     meldingskatalog: Meldingskatalog,
     override val riverName: String,
+    override val eventName: String = "behov",
 ) : IdentifisertMeldingRiver(rapidsConnection, meldingskatalog) {
-    override val eventName: String = "behov"
     override fun validate(message: JsonMessage) {
         message.requireAllOrAny("@behov", listOf(riverName))
     }
@@ -17,6 +17,6 @@ private class BehovRiver(
     override fun createMessage(packet: JsonMessage) = Behov(riverName)
 }
 
-fun Meldingskatalog.behov(name: String) {
-    BehovRiver(delegatedRapid, this, name)
+fun Meldingskatalog.behov(name: String, eventName: String = "behov") {
+    BehovRiver(delegatedRapid, this, name, eventName)
 }
