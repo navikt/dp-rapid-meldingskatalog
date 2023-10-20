@@ -7,6 +7,7 @@ import no.nav.dagpenger.rapid.meldingskatalog.Meldingslytter
 class Meldingslogger : Meldingslytter {
     private companion object {
         val logger = KotlinLogging.logger {}
+        val sikkerlogg= KotlinLogging.logger {}
     }
 
     override fun gjenkjentMelding(melding: IdentifisertMelding) {
@@ -14,6 +15,7 @@ class Meldingslogger : Meldingslytter {
     }
 
     override fun ukjentMelding(melding: String) {
-        logger.warn("Ukjent melding: $melding")
+        logger.warn("Ukjent melding. Se sikkerlogg for detaljer.")
+        sikkerlogg.warn("Ukjent melding: $melding")
     }
 }
