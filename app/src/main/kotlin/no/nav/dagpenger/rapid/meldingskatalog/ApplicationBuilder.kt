@@ -1,8 +1,11 @@
 package no.nav.dagpenger.rapid.meldingskatalog
 
 import mu.KotlinLogging
+import no.nav.dagpenger.rapid.meldingskatalog.db.PostgresDataSourceBuilder.dataSource
+import no.nav.dagpenger.rapid.meldingskatalog.lyttere.Meldingslagrer
 import no.nav.dagpenger.rapid.meldingskatalog.lyttere.Meldingslogger
 import no.nav.dagpenger.rapid.meldingskatalog.lyttere.Meldingsteller
+import no.nav.dagpenger.rapid.meldingskatalog.meldingskatalog.MeldingRepositoryPostgres
 import no.nav.helse.rapids_rivers.RapidApplication
 import no.nav.helse.rapids_rivers.RapidsConnection
 
@@ -15,6 +18,7 @@ internal class ApplicationBuilder(configuration: Map<String, String>) : RapidsCo
         Meldingskatalog(rapidsConnection).apply { kjenteMeldinger() }.also {
             it.leggTilLytter(Meldingslogger())
             it.leggTilLytter(Meldingsteller())
+            it.leggTilLytter(Meldingslagrer(MeldingRepositoryPostgres(dataSource)))
         }
     }
 

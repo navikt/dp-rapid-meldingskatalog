@@ -32,6 +32,7 @@ internal abstract class IdentifisertMeldingRiver(
                     "application_up",
                 ),
             )
+            it.interestedIn("system_participating_services")
         }
     }
     protected abstract val eventName: String

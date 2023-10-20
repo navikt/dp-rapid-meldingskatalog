@@ -12,7 +12,10 @@ dependencies {
     implementation(project(":meldingskatalog"))
     implementation(libs.kotlin.logging)
     implementation(libs.rapids.and.rivers)
+    implementation(libs.bundles.postgres)
+
     testImplementation(kotlin("test"))
+    testImplementation(libs.bundles.postgres.test)
 }
 
 tasks {

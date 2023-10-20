@@ -38,6 +38,16 @@ spec:
       value: earliest
   kafka:
     pool: {{ kafka_pool }}
+  gcp:
+    sqlInstances:
+      - type: POSTGRES_15
+        highAvailability: true
+        diskAutoresize: true
+        pointInTimeRecovery: true
+        tier: {{gcp.sql.tier}}
+        databases:
+          - name: rapid-meldingskatalog
+            envVarPrefix: DB
   azure:
     application:
       enabled: true
