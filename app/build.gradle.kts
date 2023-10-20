@@ -1,5 +1,5 @@
 plugins {
-    id("org.jetbrains.kotlin.jvm") version "1.9.0"
+    id("org.jetbrains.kotlin.jvm")
     application
 }
 
@@ -10,8 +10,11 @@ repositories {
 
 dependencies {
     implementation(project(":meldingskatalog"))
+    implementation(project(":openapi"))
     implementation(libs.kotlin.logging)
     implementation(libs.rapids.and.rivers)
+    implementation(libs.bundles.ktor.server)
+    implementation("io.ktor:ktor-server-swagger:${libs.versions.ktor.get()}")
     implementation(libs.bundles.postgres)
 
     testImplementation(kotlin("test"))
@@ -23,7 +26,7 @@ tasks {
         useJUnitPlatform()
     }
     jar {
-        dependsOn(":meldingskatalog:jar")
+        dependsOn(":meldingskatalog:jar", ":openapi:jar")
 
         manifest {
             attributes["Main-Class"] = application.mainClass

@@ -1,6 +1,7 @@
 package no.nav.dagpenger.rapid.meldingskatalog
 
 import mu.KotlinLogging
+import no.nav.dagpenger.rapid.meldingskatalog.api.meldingskatalogAPI
 import no.nav.dagpenger.rapid.meldingskatalog.db.PostgresDataSourceBuilder.dataSource
 import no.nav.dagpenger.rapid.meldingskatalog.db.PostgresDataSourceBuilder.runMigration
 import no.nav.dagpenger.rapid.meldingskatalog.lyttere.Meldingslagrer
@@ -12,7 +13,9 @@ import no.nav.helse.rapids_rivers.RapidsConnection
 
 internal class ApplicationBuilder(configuration: Map<String, String>) : RapidsConnection.StatusListener {
     private val rapidsConnection: RapidsConnection =
-        RapidApplication.Builder(RapidApplication.RapidApplicationConfig.fromEnv(configuration)).build()
+        RapidApplication.Builder(RapidApplication.RapidApplicationConfig.fromEnv(configuration)).apply {
+            withKtorModule { meldingskatalogAPI() }
+        }.build()
 
     init {
         rapidsConnection.register(this)

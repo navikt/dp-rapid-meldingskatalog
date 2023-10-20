@@ -1,0 +1,176 @@
+openapi: 3.0.0
+info:
+  title: Meldingskatalog for rapids
+  version: 1.0.0
+  contact:
+    name: '#team-dagpenger'
+servers:
+  - url: https://dp-rapid-meldingskatalog.intern.dev.nav.no
+    description: dev
+tags:
+  - name: Meldingskatalog
+    description: >-
+      Gir en oversikt over hvilke meldinger som finnes i rapiden
+  - name: System
+    description: >-
+      Gir en oversikt over hvilke system som er involvert, hvilke meldinger de produserer og hvilke system de snakker med.
+
+paths:
+  /meldingstype:
+    get:
+      summary: Gir en liste med alle kjente meldingstyper
+      operationId: get-meldingstyper
+      tags:
+        - Meldingskatalog
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Meldingstype'
+  /meldingstype/{meldingstype}:
+    parameters:
+      - $ref: '#/components/parameters/Meldingstype'
+    get:
+      summary: Gir en bestemt meldingstype
+      operationId: get-meldingstype
+      tags:
+        - Meldingskatalog
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Meldingstype'
+  /meldingstype/{meldingstype}/meldinger:
+    parameters:
+      - $ref: '#/components/parameters/Meldingstype'
+    get:
+      summary: Gir en liste med meldinger av en bestemt meldingstype
+      operationId: get-meldinger
+      tags:
+        - Meldingskatalog
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Melding'
+  /meldingstype/{meldingstype}/schema:
+    parameters:
+      - $ref: '#/components/parameters/Meldingstype'
+    get:
+      summary: Gir et JSON Schema som brukes for å validere meldinger av en bestemt meldingstype
+      operationId: get-melding-schema
+      tags:
+        - Meldingskatalog
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Melding'
+  /meldingstype/{meldingstype}/mock:
+    parameters:
+      - $ref: '#/components/parameters/Meldingstype'
+    get:
+      summary: Gir en generert melding av en bestemt meldingstype
+      operationId: get-melding-mock
+      tags:
+        - Meldingskatalog
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Melding'
+  /system:
+    get:
+      summary: Gir en liste om alle system og hvilke meldinger de produserer
+      operationId: get-system
+      tags:
+        - System
+      security:
+        - azureAd: [ ]
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/System'
+components:
+  securitySchemes:
+    azureAd:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: |
+        Bruker [AzureAD](https://docs.nais.io/security/auth/azure-ad) til autentisering. 
+        Token må ha `audience` satt til `[cluster]:teamdagpenger:dp-rapportering`.
+        
+        For å teste APIet kan du lage et gyldig OBO-token ved å bruke wonderwalled:
+        - [dev-gcp](https://wonderwalled-idporten.intern.dev.nav.no/api/obo?aud=dev-gcp:teamdagpenger:dp-rapportering)
+
+  schemas:
+    System:
+      type: object
+      properties:
+        navn:
+          type: string
+        meldinger:
+          type: array
+          items:
+            $ref: '#/components/schemas/Meldingstype'
+    Meldingstype:
+      description: Meldingstype
+      type: object
+      properties:
+        navn:
+          type: string
+          example: "Journalpost"
+        type:
+          type: string
+          example: "Behov"
+        antall:
+          type: integer
+        systemer:
+          type: array
+          items:
+            $ref: '#/components/schemas/System'
+    Melding:
+      description: Melding
+      type: object
+      properties:
+        meldingsreferanseId:
+          type: string
+          format: uuid
+        type:
+          type: string
+          example: "Behov"
+        systemer:
+          type: array
+          items:
+            $ref: '#/components/schemas/System'
+  parameters:
+    Meldingstype:
+      name: meldingstype
+      in: path
+      required: true
+      schema:
+        type: string
