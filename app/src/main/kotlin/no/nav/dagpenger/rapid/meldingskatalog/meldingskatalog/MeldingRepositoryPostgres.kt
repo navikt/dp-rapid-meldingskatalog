@@ -16,18 +16,23 @@ class MeldingRepositoryPostgres(private val ds: DataSource) : MeldingRepository 
             queryOf(
                 //language=PostgreSQL
                 """
-                SELECT mt.navn                   AS navn,
-                       mt.type                   AS type,
-                       COUNT(ml.meldingstype_id) AS antall
+                SELECT
+                    mt.navn AS message_name,
+                    mt.type AS message_type,
+                    COUNT(ml.meldingstype_id) AS instance_count,
+                    ARRAY_AGG(DISTINCT s.navn) AS connected_services
                 FROM meldingstyper mt
                 LEFT JOIN meldingslogg ml ON mt.id = ml.meldingstype_id
+                LEFT JOIN behandlingskjeder bk ON ml.meldingsreferanse_id = bk.meldingslogg_id
+                LEFT JOIN systemer s ON bk.system_id = s.id
                 GROUP BY mt.navn, mt.type;
                 """.trimIndent(),
             ).map { row ->
                 Meldingstype(
-                    navn = row.string("navn"),
-                    type = row.string("type"),
-                    antall = row.int("antall"),
+                    navn = row.string("message_name"),
+                    type = row.string("message_type"),
+                    antall = row.int("instance_count"),
+                    system = row.array<String>("connected_services").toList().filterNot { it.isBlank() },
                 )
             }.asList,
         )
@@ -38,11 +43,15 @@ class MeldingRepositoryPostgres(private val ds: DataSource) : MeldingRepository 
             queryOf(
                 //language=PostgreSQL
                 """
-                SELECT mt.navn                   AS navn,
-                       mt.type                   AS type,
-                       COUNT(ml.meldingstype_id) AS antall
+                SELECT
+                    mt.navn AS message_name,
+                    mt.type AS message_type,
+                    COUNT(ml.meldingstype_id) AS instance_count,
+                    ARRAY_AGG(DISTINCT s.navn) AS connected_services
                 FROM meldingstyper mt
                 LEFT JOIN meldingslogg ml ON mt.id = ml.meldingstype_id
+                LEFT JOIN behandlingskjeder bk ON ml.meldingsreferanse_id = bk.meldingslogg_id
+                LEFT JOIN systemer s ON bk.system_id = s.id
                 WHERE mt.navn = :meldingstype
                 GROUP BY mt.navn, mt.type;
                 """.trimIndent(),
@@ -52,6 +61,7 @@ class MeldingRepositoryPostgres(private val ds: DataSource) : MeldingRepository 
                     navn = row.string("navn"),
                     type = row.string("type"),
                     antall = row.int("antall"),
+                    system = row.array<String>("connected_services").toList().filterNot { it.isBlank() },
                 )
             }.asSingle,
         )
@@ -109,6 +119,7 @@ class MeldingRepositoryPostgres(private val ds: DataSource) : MeldingRepository 
                             navn = row.string("message_name"),
                             type = row.string("message_type"),
                             antall = 0,
+                            system = emptyList(),
                         ),
                     ),
                 )

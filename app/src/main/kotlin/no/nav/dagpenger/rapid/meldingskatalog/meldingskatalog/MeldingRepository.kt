@@ -12,7 +12,7 @@ internal interface MeldingRepository {
     fun hentSystem(): List<System>
 }
 
-data class Meldingstype(val navn: String, val type: String, val antall: Int)
+data class Meldingstype(val navn: String, val type: String, val antall: Int, val system: List<String>)
 data class Melding(
     val meldingsreferanseId: UUID,
     val navn: String,

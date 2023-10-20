@@ -27,14 +27,16 @@ internal fun Application.meldingskatalogAPI(repository: MeldingRepository) {
 
         get("/meldingstype") {
             val messageTypes = repository.hentMeldingstyper().map {
-                MeldingstypeDTO(it.navn, it.type, 0, emptyList())
+                MeldingstypeDTO(it.navn, it.type, it.antall, it.system.map(::SystemDTO))
             }
             call.respond(messageTypes)
         }
 
         get("/meldingstype/{meldingstype}") {
             val meldingstype = call.parameters["meldingstype"]!!
-            val messageType = repository.hentMeldingstype(meldingstype)
+            val messageType = repository.hentMeldingstype(meldingstype).let {
+                MeldingstypeDTO(it.navn, it.type, it.antall, it.system.map(::SystemDTO))
+            }
             call.respond(messageType)
         }
 
