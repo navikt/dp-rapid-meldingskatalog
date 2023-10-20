@@ -1,10 +1,11 @@
 package no.nav.dagpenger.rapid.meldingskatalog
 
 import no.nav.dagpenger.rapid.meldingskatalog.melding.IdentifisertMelding
-import no.nav.dagpenger.rapid.meldingskatalog.melding.behov
-import no.nav.dagpenger.rapid.meldingskatalog.melding.hendelse
-import no.nav.dagpenger.rapid.meldingskatalog.melding.melding
+import no.nav.dagpenger.rapid.meldingskatalog.melding.rivers.behov
+import no.nav.dagpenger.rapid.meldingskatalog.melding.rivers.hendelse
+import no.nav.dagpenger.rapid.meldingskatalog.melding.rivers.melding
 import no.nav.helse.rapids_rivers.JsonMessage
+import no.nav.helse.rapids_rivers.MessageProblems
 import no.nav.helse.rapids_rivers.testsupport.TestRapid
 import org.junit.jupiter.api.Test
 import kotlin.test.assertEquals
@@ -56,7 +57,7 @@ private class Meldingsteller : Meldingslytter {
         kjenteMeldinger++
     }
 
-    override fun ukjentMelding(melding: String) {
+    override fun ukjentMelding(melding: String, riverErrors: MutableList<Pair<String, MessageProblems>>) {
         ukjenteMeldinger++
     }
 }

@@ -10,7 +10,6 @@ class Meldingskatalog(
     rapidsConnection: RapidsConnection,
 ) {
     private companion object {
-        private val logger = KotlinLogging.logger {}
         private val sikkerlogg = KotlinLogging.logger("tjenestekall")
     }
 
@@ -32,7 +31,6 @@ class Meldingskatalog(
 
     internal fun onRecognizedMessage(message: IdentifisertMelding, context: MessageContext) {
         messageRecognized = true
-        message.loggIdentifisert(logger)
         listeners.forEach { it.gjenkjentMelding(message) }
     }
 
@@ -42,8 +40,7 @@ class Meldingskatalog(
 
     private fun afterRiverHandling(message: String) {
         if (messageRecognized || riverErrors.isEmpty()) return
-        listeners.forEach { it.ukjentMelding(message) }
-        sikkerlogg.warn("kunne ikke gjenkjenne melding:\n\t$message\n\nProblemer:\n${riverErrors.joinToString(separator = "\n") { "${it.first}:\n${it.second}" }}")
+        listeners.forEach { it.ukjentMelding(message, riverErrors) }
     }
 
     internal inner class DelegatedRapid(
@@ -78,5 +75,5 @@ class Meldingskatalog(
 interface Meldingslytter {
     fun gjenkjentMelding(melding: IdentifisertMelding)
 
-    fun ukjentMelding(melding: String)
+    fun ukjentMelding(melding: String, riverErrors: MutableList<Pair<String, MessageProblems>>)
 }

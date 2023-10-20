@@ -1,9 +1,9 @@
-package no.nav.dagpenger.rapid.meldingskatalog.melding
+package no.nav.dagpenger.rapid.meldingskatalog.melding.rivers
 
 import com.fasterxml.jackson.databind.JsonNode
-import mu.KotlinLogging
 import mu.withLoggingContext
 import no.nav.dagpenger.rapid.meldingskatalog.Meldingskatalog
+import no.nav.dagpenger.rapid.meldingskatalog.melding.IdentifisertMelding
 import no.nav.helse.rapids_rivers.JsonMessage
 import no.nav.helse.rapids_rivers.MessageContext
 import no.nav.helse.rapids_rivers.MessageProblems
@@ -64,21 +64,12 @@ internal abstract class IdentifisertMeldingRiver(
                 "melding_type" to eventName,
                 "melding_id" to packet["@id"].asText(),
             ) {
-                try {
-                    meldingskatalog.onRecognizedMessage(createMessage(packet), context)
-                } catch (e: Exception) {
-                    sikkerlogg.error("Klarte ikke å lese melding, innhold: ${packet.toJson()}", e)
-                    throw e
-                }
+                meldingskatalog.onRecognizedMessage(createMessage(packet), context)
             }
         }
 
         override fun onError(problems: MessageProblems, context: MessageContext) {
             meldingskatalog.onRiverError(riverName, problems, context)
         }
-    }
-
-    private companion object {
-        private val sikkerlogg = KotlinLogging.logger("tjenestekall")
     }
 }

@@ -1,7 +1,7 @@
 package no.nav.dagpenger.rapid.meldingskatalog
 
-import no.nav.dagpenger.rapid.meldingskatalog.melding.behov
-import no.nav.dagpenger.rapid.meldingskatalog.melding.hendelse
+import no.nav.dagpenger.rapid.meldingskatalog.melding.rivers.behov
+import no.nav.dagpenger.rapid.meldingskatalog.melding.rivers.hendelse
 
 fun Meldingskatalog.kjenteMeldinger() {
     behov("Journalpost")

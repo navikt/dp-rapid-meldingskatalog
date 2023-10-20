@@ -1,4 +1,4 @@
-package no.nav.dagpenger.rapid.meldingskatalog.melding
+package no.nav.dagpenger.rapid.meldingskatalog.melding.rivers
 
 import no.nav.dagpenger.rapid.meldingskatalog.Meldingskatalog
 import no.nav.dagpenger.rapid.meldingskatalog.melding.IdentifisertMelding.Behov

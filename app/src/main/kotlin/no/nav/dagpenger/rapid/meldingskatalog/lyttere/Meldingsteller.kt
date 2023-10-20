@@ -3,6 +3,7 @@ package no.nav.dagpenger.rapid.meldingskatalog.lyttere
 import mu.KotlinLogging
 import no.nav.dagpenger.rapid.meldingskatalog.Meldingslytter
 import no.nav.dagpenger.rapid.meldingskatalog.melding.IdentifisertMelding
+import no.nav.helse.rapids_rivers.MessageProblems
 
 class Meldingsteller : Meldingslytter {
     private val identifiserteMeldinger = mutableMapOf<String, Int>()
@@ -28,7 +29,7 @@ class Meldingsteller : Meldingslytter {
         }
     }
 
-    override fun ukjentMelding(melding: String) {
+    override fun ukjentMelding(melding: String, riverErrors: MutableList<Pair<String, MessageProblems>>) {
         tellUkjentMelding()
     }
 
