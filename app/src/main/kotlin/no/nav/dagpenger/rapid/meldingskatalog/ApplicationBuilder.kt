@@ -2,6 +2,7 @@ package no.nav.dagpenger.rapid.meldingskatalog
 
 import mu.KotlinLogging
 import no.nav.dagpenger.rapid.meldingskatalog.db.PostgresDataSourceBuilder.dataSource
+import no.nav.dagpenger.rapid.meldingskatalog.db.PostgresDataSourceBuilder.runMigration
 import no.nav.dagpenger.rapid.meldingskatalog.lyttere.Meldingslagrer
 import no.nav.dagpenger.rapid.meldingskatalog.lyttere.Meldingslogger
 import no.nav.dagpenger.rapid.meldingskatalog.lyttere.Meldingsteller
@@ -27,6 +28,7 @@ internal class ApplicationBuilder(configuration: Map<String, String>) : RapidsCo
     }
 
     override fun onStartup(rapidsConnection: RapidsConnection) {
+        runMigration()
         logger.info { "Starter applikasjonen" }
     }
 
