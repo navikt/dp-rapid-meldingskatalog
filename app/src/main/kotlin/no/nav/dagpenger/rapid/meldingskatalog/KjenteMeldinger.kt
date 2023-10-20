@@ -9,4 +9,16 @@ fun Meldingskatalog.kjenteMeldinger() {
     behov("Barn", "faktum_svar") // Quiz sender behov med annen event type
     hendelse("faktum_svar")
     hendelse("søker_oppgave")
+    hendelse("dokumentkrav_innsendt")
+    hendelse("søknad_endret_tilstand")
+    behov("NyInnsending")
+    behov("InnsendingMetadata")
+    behov("ArkiverbarSøknad")
+    behov("Persondata")
+    behov("MinsteinntektVurdering")
+    behov("EksisterendeSaker")
+    behov("OpprettStartVedtakOppgave")
+    behov("OpprettGosysoppgave")
+    behov("OppdaterJournalpost")
+    hendelse("manuell_behandling")
 }
