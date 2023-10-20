@@ -1,4 +1,4 @@
-package no.nav.dagpenger.rapid.meldingskatalog
+package no.nav.dagpenger.rapid.meldingskatalog.melding
 
 import mu.KLogger
 

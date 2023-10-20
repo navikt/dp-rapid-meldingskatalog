@@ -1,8 +1,8 @@
 package no.nav.dagpenger.rapid.meldingskatalog.lyttere
 
 import mu.KotlinLogging
-import no.nav.dagpenger.rapid.meldingskatalog.IdentifisertMelding
 import no.nav.dagpenger.rapid.meldingskatalog.Meldingslytter
+import no.nav.dagpenger.rapid.meldingskatalog.melding.IdentifisertMelding
 
 class Meldingsteller : Meldingslytter {
     private val identifiserteMeldinger = mutableMapOf<String, Int>()

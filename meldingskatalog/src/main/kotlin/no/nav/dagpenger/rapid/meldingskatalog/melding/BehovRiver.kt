@@ -1,6 +1,7 @@
-package no.nav.dagpenger.rapid.meldingskatalog
+package no.nav.dagpenger.rapid.meldingskatalog.melding
 
-import no.nav.dagpenger.rapid.meldingskatalog.IdentifisertMelding.Behov
+import no.nav.dagpenger.rapid.meldingskatalog.Meldingskatalog
+import no.nav.dagpenger.rapid.meldingskatalog.melding.IdentifisertMelding.Behov
 import no.nav.helse.rapids_rivers.JsonMessage
 import no.nav.helse.rapids_rivers.RapidsConnection
 

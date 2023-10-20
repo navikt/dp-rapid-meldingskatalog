@@ -1,7 +1,7 @@
 package no.nav.dagpenger.rapid.meldingskatalog.lyttere
 
 import mu.KotlinLogging
-import no.nav.dagpenger.rapid.meldingskatalog.IdentifisertMelding
+import no.nav.dagpenger.rapid.meldingskatalog.melding.IdentifisertMelding
 import no.nav.dagpenger.rapid.meldingskatalog.Meldingslytter
 
 class Meldingslogger : Meldingslytter {

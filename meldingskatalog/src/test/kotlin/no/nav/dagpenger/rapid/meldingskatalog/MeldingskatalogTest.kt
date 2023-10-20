@@ -1,5 +1,9 @@
 package no.nav.dagpenger.rapid.meldingskatalog
 
+import no.nav.dagpenger.rapid.meldingskatalog.melding.IdentifisertMelding
+import no.nav.dagpenger.rapid.meldingskatalog.melding.behov
+import no.nav.dagpenger.rapid.meldingskatalog.melding.hendelse
+import no.nav.dagpenger.rapid.meldingskatalog.melding.melding
 import no.nav.helse.rapids_rivers.JsonMessage
 import no.nav.helse.rapids_rivers.testsupport.TestRapid
 import org.junit.jupiter.api.Test
@@ -16,6 +20,9 @@ internal class MeldingskatalogTest {
             behov("foo")
             behov("this")
             hendelse("this")
+            melding("plong", {
+                it.requireKey("plong")
+            })
         }
 
         katalog.behov("fooby")

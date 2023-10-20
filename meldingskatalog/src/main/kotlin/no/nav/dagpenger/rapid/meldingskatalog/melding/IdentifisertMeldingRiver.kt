@@ -1,8 +1,9 @@
-package no.nav.dagpenger.rapid.meldingskatalog
+package no.nav.dagpenger.rapid.meldingskatalog.melding
 
 import com.fasterxml.jackson.databind.JsonNode
 import mu.KotlinLogging
 import mu.withLoggingContext
+import no.nav.dagpenger.rapid.meldingskatalog.Meldingskatalog
 import no.nav.helse.rapids_rivers.JsonMessage
 import no.nav.helse.rapids_rivers.MessageContext
 import no.nav.helse.rapids_rivers.MessageProblems

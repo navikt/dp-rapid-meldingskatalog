@@ -1,6 +1,7 @@
 package no.nav.dagpenger.rapid.meldingskatalog
 
 import mu.KotlinLogging
+import no.nav.dagpenger.rapid.meldingskatalog.melding.IdentifisertMelding
 import no.nav.helse.rapids_rivers.MessageContext
 import no.nav.helse.rapids_rivers.MessageProblems
 import no.nav.helse.rapids_rivers.RapidsConnection
