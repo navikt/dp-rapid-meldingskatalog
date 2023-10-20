@@ -11,6 +11,111 @@ import java.util.UUID
 import javax.sql.DataSource
 
 class MeldingRepositoryPostgres(private val ds: DataSource) : MeldingRepository {
+    override fun hentMeldingstyper() = using(sessionOf(ds)) { session ->
+        session.run(
+            queryOf(
+                //language=PostgreSQL
+                """
+                SELECT mt.navn                   AS navn,
+                       mt.type                   AS type,
+                       COUNT(ml.meldingstype_id) AS antall
+                FROM meldingstyper mt
+                LEFT JOIN meldingslogg ml ON mt.id = ml.meldingstype_id
+                GROUP BY mt.navn, mt.type;
+                """.trimIndent(),
+            ).map { row ->
+                Meldingstype(
+                    navn = row.string("navn"),
+                    type = row.string("type"),
+                    antall = row.int("antall"),
+                )
+            }.asList,
+        )
+    }
+
+    override fun hentMeldingstype(meldingstype: String) = using(sessionOf(ds)) { session ->
+        session.run(
+            queryOf(
+                //language=PostgreSQL
+                """
+                SELECT mt.navn                   AS navn,
+                       mt.type                   AS type,
+                       COUNT(ml.meldingstype_id) AS antall
+                FROM meldingstyper mt
+                LEFT JOIN meldingslogg ml ON mt.id = ml.meldingstype_id
+                WHERE mt.navn = :meldingstype
+                GROUP BY mt.navn, mt.type;
+                """.trimIndent(),
+                mapOf("meldingstype" to meldingstype),
+            ).map { row ->
+                Meldingstype(
+                    navn = row.string("navn"),
+                    type = row.string("type"),
+                    antall = row.int("antall"),
+                )
+            }.asSingle,
+        )
+    } ?: throw IllegalArgumentException("Meldingstype $meldingstype finnes ikke")
+
+    override fun hentMeldinger(meldingstype: String) = using(sessionOf(ds)) { session ->
+        session.run(
+            queryOf(
+                //language=PostgreSQL
+                """
+                SELECT ml.meldingsreferanse_id AS message_reference_id,
+                       mt.navn                 AS message_name,
+                       mt.type                 AS message_type,
+                       ml.opprettet            AS created_at,
+                       ml.mottatt              AS received_at
+                FROM meldingslogg ml
+                JOIN meldingstyper mt ON ml.meldingstype_id = mt.id
+                WHERE mt.type = :meldingstype
+                ORDER BY ml.opprettet DESC;
+                """.trimIndent(),
+                mapOf("meldingstype" to meldingstype),
+            ).map { row ->
+                Melding(
+                    meldingsreferanseId = row.uuid("message_reference_id"),
+                    navn = row.string("message_name"),
+                    type = row.string("message_type"),
+                    opprettet = row.localDateTime("created_at"),
+                    mottatt = row.localDateTime("received_at"),
+                )
+            }.asList,
+        )
+    }
+
+    override fun hentSystem() = using(sessionOf(ds)) { session ->
+        session.run(
+            queryOf(
+                //language=PostgreSQL
+                """
+                SELECT
+                    s.navn AS system_name,
+                    mt.navn AS message_name,
+                    mt.type AS message_type,
+                    COUNT(*) AS message_type_count
+                FROM systemer s
+                JOIN behandlingskjeder bk ON s.id = bk.system_id
+                JOIN meldingstyper mt ON bk.meldingstype_id = mt.id
+                GROUP BY s.navn, mt.navn, mt.type
+                ORDER BY s.navn, mt.navn;
+                """.trimIndent(),
+            ).map { row ->
+                System(
+                    navn = row.string("system_name"),
+                    meldingstyper = listOf(
+                        Meldingstype(
+                            navn = row.string("message_name"),
+                            type = row.string("message_type"),
+                            antall = 0,
+                        ),
+                    ),
+                )
+            }.asList,
+        )
+    }
+
     override fun lagre(melding: IdentifisertMelding) {
         using(sessionOf(ds)) { session ->
             session.transaction { tx ->
