@@ -51,17 +51,11 @@ internal fun Application.meldingskatalogAPI(repository: MeldingRepository) {
         }
 
         get("/meldingstype/{meldingstype}/schema") {
-            val meldingstype = call.parameters["meldingstype"]
             TODO("Not yet implemented")
-            val messageType = MeldingstypeDTO(meldingstype ?: "", "Behov", 0, emptyList()) // Replace with your data
-            call.respond(messageType)
         }
 
         get("/meldingstype/{meldingstype}/mock") {
-            val meldingstype = call.parameters["meldingstype"]
             TODO("Not yet implemented")
-            val messageType = MeldingstypeDTO(meldingstype ?: "", "Behov", 0, emptyList()) // Replace with your data
-            call.respond(messageType)
         }
 
         get("/system") {

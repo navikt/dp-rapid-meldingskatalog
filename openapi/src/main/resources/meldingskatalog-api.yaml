@@ -103,8 +103,8 @@ paths:
       operationId: get-system
       tags:
         - System
-      security:
-        - azureAd: [ ]
+      #security:
+      #  - azureAd: [ ]
       responses:
         '200':
           description: OK

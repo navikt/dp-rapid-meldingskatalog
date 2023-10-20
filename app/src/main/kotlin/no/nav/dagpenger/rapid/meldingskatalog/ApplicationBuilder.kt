@@ -12,9 +12,10 @@ import no.nav.helse.rapids_rivers.RapidApplication
 import no.nav.helse.rapids_rivers.RapidsConnection
 
 internal class ApplicationBuilder(configuration: Map<String, String>) : RapidsConnection.StatusListener {
+    private val repository = MeldingRepositoryPostgres(dataSource)
     private val rapidsConnection: RapidsConnection =
         RapidApplication.Builder(RapidApplication.RapidApplicationConfig.fromEnv(configuration)).apply {
-            withKtorModule { meldingskatalogAPI() }
+            withKtorModule { meldingskatalogAPI(repository) }
         }.build()
 
     init {
@@ -22,7 +23,7 @@ internal class ApplicationBuilder(configuration: Map<String, String>) : RapidsCo
         Meldingskatalog(rapidsConnection).apply { kjenteMeldinger() }.also {
             it.leggTilLytter(Meldingslogger())
             it.leggTilLytter(Meldingsteller())
-            it.leggTilLytter(Meldingslagrer(MeldingRepositoryPostgres(dataSource)))
+            it.leggTilLytter(Meldingslagrer(repository))
         }
     }
 
