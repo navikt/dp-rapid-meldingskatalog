@@ -25,7 +25,8 @@ class MeldingRepositoryPostgres(private val ds: DataSource) : MeldingRepository 
                 LEFT JOIN meldingslogg ml ON mt.id = ml.meldingstype_id
                 LEFT JOIN behandlingskjeder bk ON ml.meldingsreferanse_id = bk.meldingslogg_id
                 LEFT JOIN systemer s ON bk.system_id = s.id
-                GROUP BY mt.navn, mt.type;
+                GROUP BY mt.navn, mt.type
+                ORDER BY COUNT(ml.meldingstype_id) DESC, mt.navn;
                 """.trimIndent(),
             ).map { row ->
                 Meldingstype(
