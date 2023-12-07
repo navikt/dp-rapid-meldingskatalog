@@ -1,6 +1,6 @@
 plugins {
     // Apply the foojay-resolver plugin to allow automatic download of JDKs
-    id("org.gradle.toolchains.foojay-resolver-convention") version "0.4.0"
+    id("org.gradle.toolchains.foojay-resolver-convention") version "0.7.0"
 }
 
 rootProject.name = "dp-rapid-meldingskatalog"
@@ -14,7 +14,7 @@ dependencyResolutionManagement {
     }
     versionCatalogs {
         create("libs") {
-            from("no.nav.dagpenger:dp-version-catalog:20231013.44.6df857")
+            from("no.nav.dagpenger:dp-version-catalog:20231205.56.5248e3")
         }
     }
 }
