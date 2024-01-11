@@ -8,7 +8,7 @@ import no.nav.helse.rapids_rivers.MessageProblems
 class Meldingslogger : Meldingslytter {
     private companion object {
         val logger = KotlinLogging.logger {}
-        val sikkerlogg = KotlinLogging.logger {"tjenestekall"}
+        val sikkerlogg = KotlinLogging.logger("tjenestekall")
     }
 
     override fun gjenkjentMelding(melding: IdentifisertMelding) {
