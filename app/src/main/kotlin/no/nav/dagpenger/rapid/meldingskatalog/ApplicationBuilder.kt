@@ -8,6 +8,8 @@ import no.nav.dagpenger.rapid.meldingskatalog.lyttere.Meldingslagrer
 import no.nav.dagpenger.rapid.meldingskatalog.lyttere.Meldingslogger
 import no.nav.dagpenger.rapid.meldingskatalog.lyttere.Meldingsteller
 import no.nav.dagpenger.rapid.meldingskatalog.meldingskatalog.MeldingRepositoryPostgres
+import no.nav.dagpenger.rapid.meldingskatalog.rapid.JsonMessageBygger
+import no.nav.dagpenger.rapid.meldingskatalog.service.MeldingRiver
 import no.nav.helse.rapids_rivers.RapidApplication
 import no.nav.helse.rapids_rivers.RapidsConnection
 
@@ -17,14 +19,19 @@ internal class ApplicationBuilder(configuration: Map<String, String>) : RapidsCo
         RapidApplication.Builder(RapidApplication.RapidApplicationConfig.fromEnv(configuration)).apply {
             withKtorModule { meldingskatalogAPI(repository) }
         }.build()
+    private val katalog =
+        no.nav.dagpenger.meldingskatalog.Meldingskatalog(
+            JsonMessageBygger(),
+            kjenteMeldinger,
+        )
 
     init {
         rapidsConnection.register(this)
-        Meldingskatalog(rapidsConnection).apply { kjenteMeldinger() }.also {
-            it.leggTilLytter(Meldingslogger())
-            it.leggTilLytter(Meldingsteller())
-            it.leggTilLytter(Meldingslagrer(repository))
-        }
+        MeldingRiver(
+            rapidsConnection,
+            katalog,
+            listOf(Meldingslogger(), Meldingsteller(), Meldingslagrer(repository)),
+        )
     }
 
     fun start() {

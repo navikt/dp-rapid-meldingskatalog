@@ -26,29 +26,32 @@ internal fun Application.meldingskatalogAPI(repository: MeldingRepository) {
         swaggerUI(path = "openapi", swaggerFile = "meldingskatalog-api.yaml")
 
         get("/meldingstype") {
-            val messageTypes = repository.hentMeldingstyper().map {
-                MeldingstypeDTO(it.navn, it.type, it.antall, it.system.map(::SystemDTO))
-            }
+            val messageTypes =
+                repository.hentMeldingstyper().map {
+                    MeldingstypeDTO(it.navn, it.type, it.antall, it.system.map(::SystemDTO))
+                }
             call.respond(messageTypes)
         }
 
         get("/meldingstype/{meldingstype}") {
             val meldingstype = call.parameters["meldingstype"]!!
-            val messageType = repository.hentMeldingstype(meldingstype).let {
-                MeldingstypeDTO(it.navn, it.type, it.antall, it.system.map(::SystemDTO))
-            }
+            val messageType =
+                repository.hentMeldingstype(meldingstype).let {
+                    MeldingstypeDTO(it.navn, it.type, it.antall, it.system.map(::SystemDTO))
+                }
             call.respond(messageType)
         }
 
         get("/meldingstype/{meldingstype}/meldinger") {
             val meldingstype = call.parameters["meldingstype"]!!
-            val messageType = repository.hentMeldinger(meldingstype).map {
-                MeldingDTO(
-                    meldingsreferanseId = it.meldingsreferanseId,
-                    type = meldingstype,
-                    systemer = emptyList(),
-                )
-            }
+            val messageType =
+                repository.hentMeldinger(meldingstype).map {
+                    MeldingDTO(
+                        meldingsreferanseId = it.meldingsreferanseId,
+                        type = meldingstype,
+                        systemer = emptyList(),
+                    )
+                }
             call.respond(messageType)
         }
 
@@ -61,14 +64,15 @@ internal fun Application.meldingskatalogAPI(repository: MeldingRepository) {
         }
 
         get("/system") {
-            val system = repository.hentSystem().map {
-                SystemDTO(
-                    it.navn,
-                    it.meldingstyper.map { meldingstype ->
-                        MeldingstypeDTO(meldingstype.navn, meldingstype.type, meldingstype.antall, emptyList())
-                    },
-                )
-            }
+            val system =
+                repository.hentSystem().map {
+                    SystemDTO(
+                        it.navn,
+                        it.meldingstyper.map { meldingstype ->
+                            MeldingstypeDTO(meldingstype.navn, meldingstype.type, meldingstype.antall, emptyList())
+                        },
+                    )
+                }
             call.respond(system)
         }
     }

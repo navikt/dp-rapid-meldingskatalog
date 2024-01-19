@@ -1,9 +1,8 @@
 package no.nav.dagpenger.rapid.meldingskatalog.lyttere
 
 import mu.KotlinLogging
-import no.nav.dagpenger.rapid.meldingskatalog.Meldingslytter
-import no.nav.dagpenger.rapid.meldingskatalog.melding.IdentifisertMelding
-import no.nav.helse.rapids_rivers.MessageProblems
+import no.nav.dagpenger.meldingskatalog.Meldingsinformasjon
+import no.nav.dagpenger.meldingskatalog.Meldingslytter
 
 class Meldingslogger : Meldingslytter {
     private companion object {
@@ -11,11 +10,11 @@ class Meldingslogger : Meldingslytter {
         val sikkerlogg = KotlinLogging.logger {}
     }
 
-    override fun gjenkjentMelding(melding: IdentifisertMelding) {
+    override fun gjenkjentMelding(melding: Meldingsinformasjon) {
         logger.info("Gjenkjent melding: ${melding.navn}")
     }
 
-    override fun ukjentMelding(melding: String, riverErrors: MutableList<Pair<String, MessageProblems>>) {
+    override fun ukjentMelding(melding: String) {
         logger.warn("Ukjent melding. Se sikkerlogg for detaljer.")
         sikkerlogg.warn("Ukjent melding: $melding")
     }
