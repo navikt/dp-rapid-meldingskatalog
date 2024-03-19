@@ -21,4 +21,5 @@ fun Meldingskatalog.kjenteMeldinger() {
     behov("OpprettGosysoppgave")
     behov("OppdaterJournalpost")
     hendelse("manuell_behandling")
+    hendelse("søknad_innsendt")
 }
