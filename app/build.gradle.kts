@@ -1,5 +1,8 @@
+import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
+
 plugins {
     id("org.jetbrains.kotlin.jvm")
+    id("com.github.johnrengelman.shadow") version "8.1.1"
     application
 }
 
@@ -9,16 +12,18 @@ repositories {
 }
 
 dependencies {
-    implementation(project(":meldingskatalog"))
     implementation(project(":openapi"))
     implementation(libs.kotlin.logging)
     implementation(libs.rapids.and.rivers)
     implementation(libs.bundles.ktor.server)
     implementation("io.ktor:ktor-server-swagger:${libs.versions.ktor.get()}")
     implementation(libs.bundles.postgres)
+    implementation(libs.bundles.jackson)
 
     testImplementation(kotlin("test"))
     testImplementation(libs.bundles.postgres.test)
+    testImplementation(libs.kotest.assertions.core)
+    testImplementation("io.ktor:ktor-server-test-host-jvm:2.3.7")
 }
 
 tasks {
@@ -26,15 +31,7 @@ tasks {
         useJUnitPlatform()
     }
     jar {
-        dependsOn(":meldingskatalog:jar", ":openapi:jar")
-
-        manifest {
-            attributes["Main-Class"] = application.mainClass
-        }
-
-        archiveBaseName.set("app")
-        duplicatesStrategy = DuplicatesStrategy.EXCLUDE
-        from(configurations.runtimeClasspath.get().map { if (it.isDirectory) it else zipTree(it) })
+        dependsOn(":openapi:jar")
     }
 }
 
@@ -43,5 +40,9 @@ kotlin {
 }
 
 application {
-    mainClass.set("no.nav.dagpenger.rapid.meldingskatalog.AppKt")
+    mainClass.set("no.nav.dagpenger.meldingskatalog.AppKt")
+}
+
+tasks.withType<ShadowJar> {
+    mergeServiceFiles()
 }

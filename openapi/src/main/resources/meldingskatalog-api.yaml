@@ -8,14 +8,51 @@ servers:
   - url: https://dp-rapid-meldingskatalog.intern.dev.nav.no
     description: dev
 tags:
+  - name: Melding
+    description: >-
+      Gir oversikt over meldinger som har vært publisert på rapiden
   - name: Meldingskatalog
     description: >-
-      Gir en oversikt over hvilke meldinger som finnes i rapiden
+      Gir en oversikt over hvilke meldingstyper som finnes i rapiden
   - name: System
     description: >-
       Gir en oversikt over hvilke system som er involvert, hvilke meldinger de produserer og hvilke system de snakker med.
 
 paths:
+  /melding:
+    get:
+      summary: Gir en liste over alle meldinger som har vært publisert på rapiden
+      operationId: get-meldinger
+      tags:
+        - Melding
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Melding'
+  /melding/{meldingsreferanseId}/innhold:
+    parameters:
+      - name: meldingsreferanseId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+    get:
+      summary: Gir innholdet i en bestemt melding
+      operationId: get-melding-innhold
+      tags:
+        - Melding
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: { }
   /meldingstype:
     get:
       summary: Gir en liste med alle kjente meldingstyper
@@ -51,7 +88,7 @@ paths:
       - $ref: '#/components/parameters/Meldingstype'
     get:
       summary: Gir en liste med meldinger av en bestemt meldingstype
-      operationId: get-meldinger
+      operationId: get-meldinger-per-meldingstype
       tags:
         - Meldingskatalog
       responses:
@@ -156,17 +193,59 @@ components:
     Melding:
       description: Melding
       type: object
+      allOf:
+        - $ref: '#/components/schemas/MeldingKonvolutt'
+        - properties:
+            type:
+              $ref: "#/components/schemas/MeldingType"
+    MeldingType:
+      description: Hva slags melding det er
+      type: string
+      enum:
+        - Hendelse
+        - Behov
+        - Løsning
+    MeldingKonvolutt:
+      description: Konvolutt som er felles for alle meldinger
+      type: object
+      required:
+        - meldingsreferanseId
+        - opprettet
+        - eventName
+        - sporing
       properties:
         meldingsreferanseId:
           type: string
           format: uuid
-        type:
+        opprettet:
           type: string
-          example: "Behov"
-        systemer:
+          format: date-time
+        eventName:
+          type: string
+        sporing:
           type: array
           items:
-            $ref: '#/components/schemas/System'
+            $ref: '#/components/schemas/MeldingSporing'
+    MeldingSporing:
+      description: Sporing av melding
+      type: object
+      required:
+        - id
+        - time
+      properties:
+        id:
+          type: string
+          format: uuid
+        time:
+          type: string
+          format: date-time
+        service:
+          type: string
+        instance:
+          type: string
+        image:
+          type: string
+
   parameters:
     Meldingstype:
       name: meldingstype

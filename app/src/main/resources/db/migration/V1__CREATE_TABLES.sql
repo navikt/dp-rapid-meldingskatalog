@@ -1,32 +1,45 @@
-CREATE TABLE meldingstyper
+CREATE TABLE message
 (
-    id   BIGSERIAL PRIMARY KEY NOT NULL,
-    navn TEXT                  NOT NULL UNIQUE,
-    type TEXT                  NOT NULL
+    message_id          uuid PRIMARY KEY,
+    data                jsonb                                  NOT NULL,
+    lest_dato           TIMESTAMP WITH TIME ZONE DEFAULT NOW() NOT NULL,
+    behandlet_tidspunkt TIMESTAMP WITH TIME ZONE
 );
 
-CREATE INDEX ON meldingstyper (navn);
-
-CREATE TABLE meldingslogg
+CREATE TABLE melding
 (
-    meldingsreferanse_id uuid PRIMARY KEY         NOT NULL,
-    meldingstype_id      BIGINT                   NOT NULL REFERENCES meldingstyper (id),
-    opprettet            TIMESTAMP WITH TIME ZONE NOT NULL,
-    mottatt              TIMESTAMP WITH TIME ZONE NOT NULL
+    meldingsreferanse_id uuid PRIMARY KEY REFERENCES message (message_id),
+    type                 TEXT                                   NOT NULL,
+    opprettet            TIMESTAMP WITH TIME ZONE DEFAULT NOW() NOT NULL,
+    event_name           TEXT                                   NOT NULL
 );
 
-CREATE TABLE systemer
+CREATE TABLE sporing
 (
-    id   BIGSERIAL PRIMARY KEY NOT NULL,
-    navn TEXT                  NOT NULL UNIQUE
+    id                   BIGSERIAL PRIMARY KEY,
+    meldingsreferanse_id uuid REFERENCES melding (meldingsreferanse_id),
+    time                 TIMESTAMP WITH TIME ZONE DEFAULT NOW() NOT NULL,
+    service              TEXT,
+    instance             TEXT,
+    image                TEXT
 );
 
-CREATE TABLE behandlingskjeder
+CREATE TABLE melding_behov
 (
-    behandlingskjede_id BIGSERIAL PRIMARY KEY                                             NOT NULL,
-    mottatt             TIMESTAMP WITH TIME ZONE DEFAULT (NOW() AT TIME ZONE 'utc'::TEXT) NOT NULL,
-    system_id           BIGINT                                                            NOT NULL REFERENCES systemer (id),
-    meldingstype_id     BIGINT                                                            NOT NULL REFERENCES meldingstyper (id),
-    meldingslogg_id     uuid                                                              NOT NULL REFERENCES meldingslogg (meldingsreferanse_id),
-    indeks              INT                                                               NOT NULL
+    meldingsreferanse_id uuid PRIMARY KEY REFERENCES melding (meldingsreferanse_id),
+    behov_id             uuid NOT NULL
+);
+
+CREATE TABLE behov_behov
+(
+    id                   BIGSERIAL PRIMARY KEY,
+    meldingsreferanse_id uuid REFERENCES melding (meldingsreferanse_id),
+    behov                TEXT NOT NULL
+);
+
+CREATE TABLE behov_løser
+(
+    id                   BIGSERIAL PRIMARY KEY,
+    meldingsreferanse_id uuid REFERENCES melding (meldingsreferanse_id),
+    løser                TEXT NOT NULL
 );
