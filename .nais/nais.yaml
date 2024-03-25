@@ -36,6 +36,8 @@ spec:
       value: dp-rapid-meldingskatalog-v3
     - name: KAFKA_RESET_POLICY
       value: earliest
+    - name: FLYWAY_CLEAN_DISABLED
+      value: "false""
   kafka:
     pool: {{ kafka_pool }}
   gcp:
