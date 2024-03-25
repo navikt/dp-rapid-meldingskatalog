@@ -1,5 +1,8 @@
 package no.nav.dagpenger.meldingskatalog.api
 
+import com.fasterxml.jackson.databind.DeserializationFeature
+import com.fasterxml.jackson.databind.SerializationFeature
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import io.ktor.serialization.jackson.jackson
 import io.ktor.server.application.Application
 import io.ktor.server.application.call
@@ -24,7 +27,9 @@ import no.nav.dagpenger.rapid.meldingskatalog.api.models.SystemDTO
 internal fun Application.meldingskatalogAPI(repository: MeldingRepository) {
     install(ContentNegotiation) {
         jackson {
-            findAndRegisterModules()
+            registerModule(JavaTimeModule())
+            disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS)
+            configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
         }
     }
 
