@@ -1,0 +1,13 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Meldinger from '../components/Meldinger.tsx';
+
+const data = await fetch('http://localhost:8080/melding')
+    .then((res) => res.json())
+---
+
+<Layout title="Welcome to Astro.">
+    <main>
+        <Meldinger meldinger={data} client:load/>
+    </main>
+</Layout>
