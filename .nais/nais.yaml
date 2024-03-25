@@ -37,7 +37,7 @@ spec:
     - name: KAFKA_RESET_POLICY
       value: earliest
     - name: FLYWAY_CLEAN_DISABLED
-      value: "false""
+      value: "false"
   kafka:
     pool: {{ kafka_pool }}
   gcp:
