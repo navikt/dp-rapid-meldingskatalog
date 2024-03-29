@@ -52,6 +52,20 @@ class BehovRepositoryPostgres : BehovRepository {
 
     private data class BehovDTO(val opprettet: LocalDateTime, val ferdig: LocalDateTime?)
 
+    override fun hentBehov(): List<Behov> {
+        val uuids =
+            sessionOf(dataSource).use { session ->
+                session.run(
+                    queryOf(
+                        //language=PostgreSQL
+                        "SELECT behov_id FROM behov ORDER BY opprettet DESC LIMIT 100",
+                    ).map { it.uuid("behov_id") }.asList,
+                )
+            }
+
+        return uuids.map { hentBehov(it) }
+    }
+
     override fun lagreBehov(behov: Behov) =
         sessionOf(dataSource).use { session ->
             session.transaction { tx ->

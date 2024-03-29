@@ -14,5 +14,7 @@ interface BehovRepository {
 
     fun hentBehov(behovId: UUID): Behov
 
+    fun hentBehov(): List<Behov>
+
     fun lagreBehov(behov: Behov)
 }

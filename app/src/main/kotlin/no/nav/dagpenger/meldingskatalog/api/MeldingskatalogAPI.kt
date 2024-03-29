@@ -19,6 +19,7 @@ import no.nav.dagpenger.meldingskatalog.melding.Innholdstype.BehovType
 import no.nav.dagpenger.meldingskatalog.melding.Innholdstype.HendelseType
 import no.nav.dagpenger.meldingskatalog.melding.Innholdstype.LøsningType
 import no.nav.dagpenger.meldingskatalog.melding.Konvolutt
+import no.nav.dagpenger.rapid.meldingskatalog.api.models.BehovDTO
 import no.nav.dagpenger.rapid.meldingskatalog.api.models.MeldingDTO
 import no.nav.dagpenger.rapid.meldingskatalog.api.models.MeldingSporingDTO
 import no.nav.dagpenger.rapid.meldingskatalog.api.models.MeldingTypeDTO
@@ -68,6 +69,21 @@ internal fun Application.meldingskatalogAPI(
             call.respond(melding.json)
         }
 
+        get("/behov") {
+            val behov =
+                behovRepository.hentBehov().map {
+                    BehovDTO(
+                        behovId = it.behovId,
+                        opprettet = it.opprettet,
+                        løst = it.ferdig,
+                        behov = it.behov.toList(),
+                        løsninger = it.løsning.toList(),
+                        meldinger = it.meldinger.toList(),
+                    )
+                }
+
+            call.respond(behov)
+        }
         get("/meldingstype") {
             val messageTypes = emptyList<MeldingstypeDTO>()
             /*repository.hentMeldingstyper().map {

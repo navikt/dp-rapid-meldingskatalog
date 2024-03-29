@@ -29,6 +29,8 @@ class E2ETest {
 
             override fun hentBehov(behovId: UUID) = behovMap.getOrPut(behovId) { Behov(behovId) }
 
+            override fun hentBehov() = behovMap.values.toList()
+
             override fun lagreBehov(behov: Behov) {
                 TODO("Not yet implemented")
             }

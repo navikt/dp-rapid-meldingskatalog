@@ -7,6 +7,8 @@ class BehovRepositoryInMemory : BehovRepository {
 
     override fun hentBehov(behovId: UUID) = behovMap[behovId] ?: Behov(behovId)
 
+    override fun hentBehov() = behovMap.values.toList()
+
     override fun lagreBehov(behov: Behov) {
         TODO("Not yet implemented")
     }

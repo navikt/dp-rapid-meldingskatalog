@@ -11,6 +11,9 @@ tags:
   - name: Melding
     description: >-
       Gir oversikt over meldinger som har vært publisert på rapiden
+  - name: Behov
+    description: >-
+      Gir oversikt over behov og status på de
   - name: Meldingskatalog
     description: >-
       Gir en oversikt over hvilke meldingstyper som finnes i rapiden
@@ -34,6 +37,21 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/Melding'
+  /behov:
+    get:
+      summary: Gir en liste over alle behov
+      operationId: get-behov
+      tags:
+        - Behov
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Behov'
   /melding/{meldingsreferanseId}/innhold:
     parameters:
       - name: meldingsreferanseId
@@ -245,6 +263,39 @@ components:
           type: string
         image:
           type: string
+    Behov:
+      description: Behov
+      type: object
+      required:
+        - behovId
+        - opprettet
+        - behov
+        - løsninger
+        - meldinger
+      properties:
+        behovId:
+          type: string
+          format: uuid
+        opprettet:
+          type: string
+          format: date-time
+        løst:
+          type: string
+          format: date-time
+        behov:
+          type: array
+          items:
+            type: string
+        løsninger:
+          type: array
+          items:
+            type: string
+        meldinger:
+          type: array
+          items:
+            type: string
+            format: uuid
+            #$ref: '#/components/schemas/Melding'
 
   parameters:
     Meldingstype:
