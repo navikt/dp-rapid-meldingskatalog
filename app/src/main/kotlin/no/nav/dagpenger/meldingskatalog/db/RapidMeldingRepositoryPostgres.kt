@@ -35,7 +35,7 @@ class RapidMeldingRepositoryPostgres : RapidMeldingRepository {
                             "eventName" to melding.eventName,
                             "data" to
                                 PGobject().apply {
-                                    type = "jsonb"
+                                    type = "json"
                                     value = melding.json
                                 },
                         ),
