@@ -13,6 +13,7 @@ import io.ktor.server.plugins.swagger.swaggerUI
 import io.ktor.server.response.respond
 import io.ktor.server.routing.get
 import io.ktor.server.routing.routing
+import mu.KotlinLogging
 import no.nav.dagpenger.meldingskatalog.behov.BehovRepository
 import no.nav.dagpenger.meldingskatalog.db.RapidMeldingRepository
 import no.nav.dagpenger.meldingskatalog.melding.Innholdstype.BehovType
@@ -26,6 +27,9 @@ import no.nav.dagpenger.rapid.meldingskatalog.api.models.MeldingTypeDTO
 import no.nav.dagpenger.rapid.meldingskatalog.api.models.MeldingstypeDTO
 import no.nav.dagpenger.rapid.meldingskatalog.api.models.SystemDTO
 import java.util.UUID
+
+private val logger = KotlinLogging.logger {}
+private val sikkerlogg = KotlinLogging.logger("tjenestekall.meldingskatalogAPI")
 
 internal fun Application.meldingskatalogAPI(
     rapidMeldingRepository: RapidMeldingRepository,
@@ -84,6 +88,34 @@ internal fun Application.meldingskatalogAPI(
 
             call.respond(behov)
         }
+        get("/behov/{behovId}") {
+            val behovId = call.parameters["behovId"]!!.let { UUID.fromString(it) }
+            val behov =
+                behovRepository.hentBehov(behovId).let {
+                    BehovDTO(
+                        behovId = it.behovId,
+                        opprettet = it.opprettet,
+                        løst = it.ferdig,
+                        behov = it.behov.toList(),
+                        løsninger = it.løsning.toList(),
+                        meldinger = it.meldinger.toList(),
+                    )
+                }
+
+            call.respond(behov)
+        }
+        get("/behov/{behovId}/republiser") {
+            val behovId = call.parameters["behovId"]!!.let { UUID.fromString(it) }
+            val behov = behovRepository.hentBehov(behovId)
+            val meldingsreferanseId = behov.meldinger.first()
+            val melding = rapidMeldingRepository.hentMelding(meldingsreferanseId)
+
+            logger.info("Republiserer behov=$behovId meldingsreferanseId=$meldingsreferanseId")
+            sikkerlogg.info("Republiserer behov=$behovId, meldingsreferanseId=$meldingsreferanseId, melding=$melding")
+
+            call.respond(melding)
+        }
+
         get("/meldingstype") {
             val messageTypes =
                 rapidMeldingRepository.hentMeldingstyper().map {
