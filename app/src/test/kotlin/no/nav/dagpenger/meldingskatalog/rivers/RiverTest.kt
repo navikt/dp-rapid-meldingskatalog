@@ -1,19 +1,42 @@
 package no.nav.dagpenger.meldingskatalog.rivers
 
 import io.kotest.matchers.collections.shouldHaveSingleElement
-import no.nav.dagpenger.meldingskatalog.db.MeldingRepositoryInMemory
+import io.kotest.matchers.collections.shouldHaveSize
+import no.nav.dagpenger.meldingskatalog.db.RapidMeldingRepository
+import no.nav.dagpenger.meldingskatalog.db.RapidMeldingRepositoryObserver
 import no.nav.dagpenger.meldingskatalog.fixtures.TestMeldinger.behov
 import no.nav.dagpenger.meldingskatalog.fixtures.TestMeldinger.hendelse
 import no.nav.dagpenger.meldingskatalog.fixtures.TestMeldinger.løsning
-import no.nav.dagpenger.meldingskatalog.melding.Behov
-import no.nav.dagpenger.meldingskatalog.melding.Hendelse
-import no.nav.dagpenger.meldingskatalog.melding.Løsning
+import no.nav.dagpenger.meldingskatalog.melding.Innholdstype
+import no.nav.dagpenger.meldingskatalog.melding.Innholdstype.BehovType
+import no.nav.dagpenger.meldingskatalog.melding.Innholdstype.HendelseType
+import no.nav.dagpenger.meldingskatalog.melding.RapidMelding
 import no.nav.helse.rapids_rivers.testsupport.TestRapid
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import java.util.UUID
 
 class RiverTest {
     private val rapid = TestRapid()
-    private val repository = MeldingRepositoryInMemory()
+    private val repository =
+        object : RapidMeldingRepository {
+            private val observers = mutableSetOf<RapidMeldingRepositoryObserver>()
+            private val meldinger = mutableListOf<RapidMelding<*>>()
+
+            override fun <T : Innholdstype> lagreMelding(melding: RapidMelding<T>) {
+                meldinger.add(melding)
+                observers.forEach { it.onMessageAdded(melding) }
+            }
+
+            override fun hentMeldinger() = meldinger
+
+            override fun hentMelding(meldingsreferanseId: UUID) =
+                meldinger.first { it.meldingsreferanseId == meldingsreferanseId } as RapidMelding<Innholdstype>
+
+            override fun leggTilObserver(observer: RapidMeldingRepositoryObserver) = observers.add(observer)
+
+            fun reset() = meldinger.clear()
+        }
 
     init {
         HendelseRiver(rapid, repository)
@@ -21,24 +44,30 @@ class RiverTest {
         LøsningRiver(rapid, repository)
     }
 
+    @BeforeEach
+    fun setup() {
+        repository.reset()
+    }
+
     @Test
     fun `tar imot hendelse`() {
         rapid.sendTestMessage(hendelse.toJson())
 
-        repository.hentMeldinger().shouldHaveSingleElement { it is Hendelse }
+        repository.hentMeldinger().shouldHaveSingleElement { it.type is HendelseType }
     }
 
     @Test
     fun `tar imot behov`() {
-        rapid.sendTestMessage(behov.toJson())
+        rapid.sendTestMessage(behov().toJson())
 
-        repository.hentMeldinger().shouldHaveSingleElement { it is Behov }
+        repository.hentMeldinger().shouldHaveSingleElement { it.type is BehovType }
     }
 
     @Test
     fun `tar imot løsning`() {
-        rapid.sendTestMessage(løsning.toJson())
+        rapid.sendTestMessage(behov().toJson())
+        rapid.sendTestMessage(løsning().toJson())
 
-        repository.hentMeldinger().shouldHaveSingleElement { it is Løsning }
+        repository.hentMeldinger().shouldHaveSize(2)
     }
 }

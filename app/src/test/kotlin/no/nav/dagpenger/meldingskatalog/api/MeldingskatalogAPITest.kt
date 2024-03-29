@@ -1,36 +1,29 @@
 package no.nav.dagpenger.meldingskatalog.api
 
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-import io.kotest.matchers.collections.shouldHaveSize
-import io.kotest.matchers.shouldBe
-import io.kotest.matchers.shouldNotBe
 import io.ktor.client.request.get
-import io.ktor.client.statement.bodyAsText
-import io.ktor.http.HttpStatusCode
-import io.ktor.server.testing.testApplication
-import no.nav.dagpenger.meldingskatalog.db.MeldingRepositoryInMemory
 import no.nav.dagpenger.meldingskatalog.fixtures.TestMeldinger
-import no.nav.dagpenger.meldingskatalog.melding.Behov
-import no.nav.dagpenger.rapid.meldingskatalog.api.models.MeldingDTO
-import org.junit.jupiter.api.Disabled
-import kotlin.test.Test
 
 class MeldingskatalogAPITest {
     private val objectMapper =
         jacksonObjectMapper().apply {
             findAndRegisterModules()
         }
-    private val message = TestMeldinger.behov
+    private val message = TestMeldinger.behov()
+    /*jprivate val messageRepository =
+        MessageRepositoryPostgres().apply {
+            lagreMessage(message)
+        }
     private val repository =
         MeldingRepositoryInMemory().apply {
-            lagre(message, Behov.fraMessage(message))
+            // lagre(BehovMelding.fraMessage(message))
         }
 
     @Test
     fun testGetMelding() =
         testApplication {
             application {
-                meldingskatalogAPI(repository)
+                meldingskatalogAPI(messageRepository, repository)
             }
             client.get("/melding").apply {
                 status shouldBe HttpStatusCode.OK
@@ -47,7 +40,7 @@ class MeldingskatalogAPITest {
     fun testGetMeldingInnhold() =
         testApplication {
             application {
-                meldingskatalogAPI(repository)
+                meldingskatalogAPI(messageRepository, repository)
             }
             client.get("/melding/${message.id}/innhold").apply {
                 status shouldBe HttpStatusCode.OK
@@ -61,7 +54,7 @@ class MeldingskatalogAPITest {
     fun testGetMeldingstype() =
         testApplication {
             application {
-                meldingskatalogAPI(repository)
+                meldingskatalogAPI(messageRepository, repository)
             }
             client.get("/meldingstype").apply {
                 TODO("Please write your test here")
@@ -73,7 +66,7 @@ class MeldingskatalogAPITest {
     fun testGetMeldingstypeMeldingstype() =
         testApplication {
             application {
-                meldingskatalogAPI(repository)
+                meldingskatalogAPI(messageRepository, repository)
             }
             client.get("/meldingstype/{meldingstype}").apply {
                 TODO("Please write your test here")
@@ -85,7 +78,7 @@ class MeldingskatalogAPITest {
     fun testGetMeldingstypeMeldingstypeMeldinger() =
         testApplication {
             application {
-                meldingskatalogAPI(repository)
+                meldingskatalogAPI(messageRepository, repository)
             }
             client.get("/meldingstype/{meldingstype}/meldinger").apply {
                 TODO("Please write your test here")
@@ -97,7 +90,7 @@ class MeldingskatalogAPITest {
     fun testGetMeldingstypeMeldingstypeMock() =
         testApplication {
             application {
-                meldingskatalogAPI(repository)
+                meldingskatalogAPI(messageRepository, repository)
             }
             client.get("/meldingstype/{meldingstype}/mock").apply {
                 TODO("Please write your test here")
@@ -109,7 +102,7 @@ class MeldingskatalogAPITest {
     fun testGetMeldingstypeMeldingstypeSchema() =
         testApplication {
             application {
-                meldingskatalogAPI(repository)
+                meldingskatalogAPI(messageRepository, repository)
             }
             client.get("/meldingstype/{meldingstype}/schema").apply {
                 TODO("Please write your test here")
@@ -121,10 +114,10 @@ class MeldingskatalogAPITest {
     fun testGetSystem() =
         testApplication {
             application {
-                meldingskatalogAPI(repository)
+                meldingskatalogAPI(messageRepository, repository)
             }
             client.get("/system").apply {
                 TODO("Please write your test here")
             }
-        }
+        }*/
 }

@@ -1,7 +1,8 @@
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 
 plugins {
-    id("org.jetbrains.kotlin.jvm")
+    kotlin("jvm")
+    id("org.jlleitschuh.gradle.ktlint") version "12.1.0"
     id("com.github.johnrengelman.shadow") version "8.1.1"
     application
 }
@@ -23,6 +24,7 @@ dependencies {
     testImplementation(kotlin("test"))
     testImplementation(libs.bundles.postgres.test)
     testImplementation(libs.kotest.assertions.core)
+    testImplementation(libs.kotest.assertions.json)
     testImplementation("io.ktor:ktor-server-test-host-jvm:2.3.7")
 }
 
@@ -36,7 +38,7 @@ tasks {
 }
 
 kotlin {
-    jvmToolchain(17)
+    jvmToolchain(21)
 }
 
 application {

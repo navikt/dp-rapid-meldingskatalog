@@ -2,9 +2,11 @@ package no.nav.dagpenger.meldingskatalog
 
 import mu.KotlinLogging
 import no.nav.dagpenger.meldingskatalog.api.meldingskatalogAPI
-import no.nav.dagpenger.meldingskatalog.db.MeldingRepositoryInMemory
+import no.nav.dagpenger.meldingskatalog.behov.BehovRepositoryPostgres
+import no.nav.dagpenger.meldingskatalog.behov.BehovSporer
 import no.nav.dagpenger.meldingskatalog.db.PostgresDataSourceBuilder.clean
 import no.nav.dagpenger.meldingskatalog.db.PostgresDataSourceBuilder.runMigration
+import no.nav.dagpenger.meldingskatalog.db.RapidMeldingRepositoryPostgres
 import no.nav.dagpenger.meldingskatalog.rivers.BehovRiver
 import no.nav.dagpenger.meldingskatalog.rivers.HendelseRiver
 import no.nav.dagpenger.meldingskatalog.rivers.LøsningRiver
@@ -12,17 +14,21 @@ import no.nav.helse.rapids_rivers.RapidApplication
 import no.nav.helse.rapids_rivers.RapidsConnection
 
 internal class ApplicationBuilder(configuration: Map<String, String>) : RapidsConnection.StatusListener {
-    private val repository = MeldingRepositoryInMemory()
+    private val meldingRepository = RapidMeldingRepositoryPostgres()
+    private val behovRepository =
+        BehovRepositoryPostgres().also {
+            meldingRepository.leggTilObserver(BehovSporer(it))
+        }
     private val rapidsConnection: RapidsConnection =
         RapidApplication.Builder(RapidApplication.RapidApplicationConfig.fromEnv(configuration)).apply {
-            withKtorModule { meldingskatalogAPI(repository) }
+            withKtorModule { meldingskatalogAPI(meldingRepository, behovRepository) }
         }.build()
 
     init {
         rapidsConnection.register(this)
-        HendelseRiver(rapidsConnection, repository)
-        BehovRiver(rapidsConnection, repository)
-        LøsningRiver(rapidsConnection, repository)
+        HendelseRiver(rapidsConnection, meldingRepository)
+        BehovRiver(rapidsConnection, meldingRepository)
+        LøsningRiver(rapidsConnection, meldingRepository)
     }
 
     fun start() {

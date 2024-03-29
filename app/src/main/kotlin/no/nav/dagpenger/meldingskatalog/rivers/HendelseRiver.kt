@@ -1,8 +1,10 @@
 package no.nav.dagpenger.meldingskatalog.rivers
 
-import no.nav.dagpenger.meldingskatalog.db.MeldingRepository
-import no.nav.dagpenger.meldingskatalog.melding.Hendelse
+import no.nav.dagpenger.meldingskatalog.db.RapidMeldingRepository
+import no.nav.dagpenger.meldingskatalog.melding.HendelseMessage
+import no.nav.dagpenger.meldingskatalog.melding.Innholdstype.HendelseType
 import no.nav.dagpenger.meldingskatalog.melding.Konvolutt
+import no.nav.dagpenger.meldingskatalog.melding.Konvolutt.Companion.EventNameKey
 import no.nav.helse.rapids_rivers.JsonMessage
 import no.nav.helse.rapids_rivers.MessageContext
 import no.nav.helse.rapids_rivers.RapidsConnection
@@ -10,12 +12,12 @@ import no.nav.helse.rapids_rivers.River
 
 class HendelseRiver(
     rapidsConnection: RapidsConnection,
-    private val repository: MeldingRepository,
+    private val meldingRepository: RapidMeldingRepository,
 ) : River.PacketListener {
     init {
         River(rapidsConnection).apply {
             validate {
-                it.forbidValues(Konvolutt.EventNameKey, listOf("behov"))
+                it.forbidValues(EventNameKey, listOf("behov"))
                 it.rejectValues(
                     "@event_name",
                     listOf(
@@ -39,7 +41,9 @@ class HendelseRiver(
         packet: JsonMessage,
         context: MessageContext,
     ) {
-        val melding = Hendelse.fraMessage(packet)
-        repository.lagre(packet, melding)
+        val konvolutt = Konvolutt.fraMessage(packet)
+        val hendelseNavn = packet[EventNameKey].asText()
+        val melding = HendelseMessage(konvolutt, packet.toJson(), HendelseType(hendelseNavn))
+        meldingRepository.lagreMelding(melding)
     }
 }

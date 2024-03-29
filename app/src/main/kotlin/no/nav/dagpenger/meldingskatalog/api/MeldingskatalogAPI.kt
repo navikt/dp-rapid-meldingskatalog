@@ -13,18 +13,23 @@ import io.ktor.server.plugins.swagger.swaggerUI
 import io.ktor.server.response.respond
 import io.ktor.server.routing.get
 import io.ktor.server.routing.routing
-import no.nav.dagpenger.meldingskatalog.db.MeldingRepository
-import no.nav.dagpenger.meldingskatalog.melding.Behov
-import no.nav.dagpenger.meldingskatalog.melding.Hendelse
+import no.nav.dagpenger.meldingskatalog.behov.BehovRepository
+import no.nav.dagpenger.meldingskatalog.db.RapidMeldingRepository
+import no.nav.dagpenger.meldingskatalog.melding.Innholdstype.BehovType
+import no.nav.dagpenger.meldingskatalog.melding.Innholdstype.HendelseType
+import no.nav.dagpenger.meldingskatalog.melding.Innholdstype.LøsningType
 import no.nav.dagpenger.meldingskatalog.melding.Konvolutt
-import no.nav.dagpenger.meldingskatalog.melding.Løsning
 import no.nav.dagpenger.rapid.meldingskatalog.api.models.MeldingDTO
 import no.nav.dagpenger.rapid.meldingskatalog.api.models.MeldingSporingDTO
 import no.nav.dagpenger.rapid.meldingskatalog.api.models.MeldingTypeDTO
 import no.nav.dagpenger.rapid.meldingskatalog.api.models.MeldingstypeDTO
 import no.nav.dagpenger.rapid.meldingskatalog.api.models.SystemDTO
+import java.util.UUID
 
-internal fun Application.meldingskatalogAPI(repository: MeldingRepository) {
+internal fun Application.meldingskatalogAPI(
+    rapidMeldingRepository: RapidMeldingRepository,
+    behovRepository: BehovRepository,
+) {
     install(ContentNegotiation) {
         jackson {
             registerModule(JavaTimeModule())
@@ -39,28 +44,28 @@ internal fun Application.meldingskatalogAPI(repository: MeldingRepository) {
         swaggerUI(path = "openapi", swaggerFile = "meldingskatalog-api.yaml")
 
         get("/melding") {
-            val meldinger =
-                repository.hentMeldinger().map {
-                    MeldingDTO(
-                        meldingsreferanseId = it.meldingsreferanseId,
-                        eventName = it.eventName,
-                        opprettet = it.opprettet,
-                        sporing = it.sporing.toSporingDTO(),
-                        type =
-                            when (it) {
-                                is Hendelse -> MeldingTypeDTO.Hendelse
-                                is Behov -> MeldingTypeDTO.Behov
-                                is Løsning -> MeldingTypeDTO.Løsning
-                            },
-                    )
-                }
+            val meldinger = emptyList<MeldingDTO>()
+            rapidMeldingRepository.hentMeldinger().map {
+                MeldingDTO(
+                    meldingsreferanseId = it.meldingsreferanseId,
+                    eventName = it.eventName,
+                    opprettet = it.opprettet,
+                    sporing = it.sporing.toSporingDTO(),
+                    type =
+                        when (it.type) {
+                            is HendelseType -> MeldingTypeDTO.Hendelse
+                            is BehovType -> MeldingTypeDTO.Behov
+                            is LøsningType -> MeldingTypeDTO.Løsning
+                        },
+                )
+            }
 
             call.respond(meldinger)
         }
         get("/melding/{meldingsreferanseId}/innhold") {
-            val meldingsreferanseId = call.parameters["meldingsreferanseId"]!!
-            val melding = repository.hentMessage(meldingsreferanseId)
-            call.respond(melding)
+            val meldingsreferanseId = call.parameters["meldingsreferanseId"]!!.let { UUID.fromString(it) }
+            val melding = rapidMeldingRepository.hentMelding(meldingsreferanseId)
+            call.respond(melding.json)
         }
 
         get("/meldingstype") {

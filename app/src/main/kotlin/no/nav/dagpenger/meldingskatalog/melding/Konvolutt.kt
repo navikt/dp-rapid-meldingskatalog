@@ -7,9 +7,7 @@ import no.nav.helse.rapids_rivers.toUUID
 import java.time.LocalDateTime
 import java.util.UUID
 
-sealed interface Melding : Message
-
-interface Message {
+interface RapidKonvolutt {
     val meldingsreferanseId: UUID
     val opprettet: LocalDateTime
     val eventName: String
@@ -21,12 +19,15 @@ data class Konvolutt(
     override val opprettet: LocalDateTime,
     override val eventName: String,
     override val sporing: List<Sporing>,
-) : Message {
+) : RapidKonvolutt {
     companion object {
         internal val OpprettetKey = "@opprettet"
         internal val EventNameKey = "@event_name"
         internal val ReadCountKey = "system_read_count"
         internal val ParticipatingServicesKey = "system_participating_services"
+        internal val LøsningKey = "@løsning"
+        internal val NeedIdKey = "@behovId"
+        internal val NeedKey = "@behov"
 
         fun fraMessage(message: JsonMessage): Konvolutt {
             message.requireKey(OpprettetKey, EventNameKey, ParticipatingServicesKey)

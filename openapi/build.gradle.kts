@@ -1,5 +1,5 @@
 plugins {
-    id("org.jetbrains.kotlin.jvm")
+    kotlin("jvm")
     id("org.openapi.generator") version "7.4.0"
     `java-library`
 }
@@ -35,12 +35,14 @@ openApiGenerate {
             "models" to "",
         ),
     )
-    typeMappings = mapOf(
-        "DateTime" to "LocalDateTime",
-    )
-    importMappings = mapOf(
-        "LocalDateTime" to "java.time.LocalDateTime",
-    )
+    typeMappings =
+        mapOf(
+            "DateTime" to "LocalDateTime",
+        )
+    importMappings =
+        mapOf(
+            "LocalDateTime" to "java.time.LocalDateTime",
+        )
     modelNameSuffix.set("DTO")
     configOptions.set(
         mapOf(
