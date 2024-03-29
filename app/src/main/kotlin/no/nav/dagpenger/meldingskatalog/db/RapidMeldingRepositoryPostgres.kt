@@ -10,6 +10,7 @@ import no.nav.dagpenger.meldingskatalog.melding.Innholdstype.BehovType
 import no.nav.dagpenger.meldingskatalog.melding.Innholdstype.HendelseType
 import no.nav.dagpenger.meldingskatalog.melding.Innholdstype.LøsningType
 import no.nav.dagpenger.meldingskatalog.melding.Konvolutt
+import no.nav.dagpenger.meldingskatalog.melding.Konvolutt.Sporing
 import no.nav.dagpenger.meldingskatalog.melding.Pakkeinnhold
 import no.nav.dagpenger.meldingskatalog.melding.RapidMelding
 import org.postgresql.util.PGobject
@@ -22,7 +23,7 @@ class RapidMeldingRepositoryPostgres : RapidMeldingRepository {
         sessionOf(dataSource).use {
             it.transaction { tx ->
                 tx.lagreMelding(melding)
-                tx.lagreSporing(melding.meldingsreferanseId, melding.konvolutt.sporing)
+                tx.lagreSporing(melding.meldingsreferanseId, melding.sporing)
                 tx.lagreInnhold(melding.meldingsreferanseId, melding.innhold)
             }
         }.also {
@@ -54,14 +55,14 @@ class RapidMeldingRepositoryPostgres : RapidMeldingRepository {
 
     private fun Session.lagreSporing(
         meldingsreferanseId: UUID,
-        sporing: List<Konvolutt.Sporing>,
+        sporing: List<Sporing>,
     ) = sporing.forEach { sporing ->
         this.run(lagreSporing(meldingsreferanseId, sporing))
     }
 
     private fun lagreSporing(
         meldingsreferanseId: UUID,
-        sporing: Konvolutt.Sporing,
+        sporing: Sporing,
     ) = queryOf(
         //language=PostgreSQL
         """
@@ -236,7 +237,7 @@ class RapidMeldingRepositoryPostgres : RapidMeldingRepository {
                 """.trimIndent(),
                 meldingsreferanseId,
             ).map { row ->
-                Konvolutt.Sporing(
+                Sporing(
                     id = row.uuid("id"),
                     time = row.localDateTime("time"),
                     service = row.string("service"),
