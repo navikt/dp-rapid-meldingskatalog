@@ -92,12 +92,12 @@ class RapidMeldingRepositoryPostgres : RapidMeldingRepository {
         //language=PostgreSQL
         """
         INSERT INTO melding_innhold_løsning (meldingsreferanse_id, behov_id, løsning)
-        VALUES (:meldingsreferanseId, :behovId, :løsning)
+        VALUES (:meldingsreferanseId, :behovId, :losning)
         """.trimIndent(),
         mapOf(
             "meldingsreferanseId" to melding.meldingsreferanseId,
             "behovId" to innhold.behovId,
-            "løsning" to innhold.løser,
+            "losning" to innhold.løser,
         ),
     ).asUpdate
 
