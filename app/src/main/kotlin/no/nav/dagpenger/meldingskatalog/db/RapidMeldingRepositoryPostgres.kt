@@ -4,6 +4,7 @@ import kotliquery.Row
 import kotliquery.Session
 import kotliquery.queryOf
 import kotliquery.sessionOf
+import no.nav.dagpenger.meldingskatalog.Tjeneste
 import no.nav.dagpenger.meldingskatalog.db.PostgresDataSourceBuilder.dataSource
 import no.nav.dagpenger.meldingskatalog.melding.Innholdstype
 import no.nav.dagpenger.meldingskatalog.melding.Innholdstype.BehovType
@@ -255,11 +256,12 @@ class RapidMeldingRepositoryPostgres : RapidMeldingRepository {
                 queryOf(
                     //language=PostgreSQL
                     """
-                    SELECT navn, behov, COUNT(DISTINCT m.meldingsreferanse_id) AS antall 
+                    SELECT navn, behov, COUNT(DISTINCT m.meldingsreferanse_id) AS antall , ARRAY_AGG(DISTINCT s.service) AS involverte_tjenester
                     FROM melding m
+                    LEFT JOIN sporing s ON m.meldingsreferanse_id = s.meldingsreferanse_id
                     LEFT JOIN melding_innhold_hendelse mih ON m.meldingsreferanse_id = mih.meldingsreferanse_id
                     LEFT JOIN melding_innhold_behov mib ON m.meldingsreferanse_id = mib.meldingsreferanse_id
-                    WHERE (mih.navn IS NOT NULL OR mib.behov IS NOT NULL)
+                    WHERE (mih.navn IS NOT NULL OR mib.behov IS NOT NULL) 
                     GROUP BY navn, behov
                     ORDER BY antall DESC, navn
                     """.trimIndent(),
@@ -272,11 +274,12 @@ class RapidMeldingRepositoryPostgres : RapidMeldingRepository {
                             false -> "hendelse"
                         }
                     val navn = hendelse ?: behov ?: throw IllegalArgumentException("Ukjent meldingstype")
+                    val involverteTjenester = row.arrayOrNull<String>("involverte_tjenester")?.toList() ?: emptyList()
                     Meldingstype(
                         navn = navn,
                         type = type,
                         antall = row.int("antall"),
-                        involverteTjenester = emptyList(),
+                        involverteTjenester = involverteTjenester.map { navn -> Tjeneste(navn) },
                     )
                 }.asList,
             )

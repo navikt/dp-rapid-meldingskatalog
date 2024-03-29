@@ -11,6 +11,7 @@ CREATE TABLE melding
 CREATE TABLE sporing
 (
     id                   BIGSERIAL PRIMARY KEY,
+    sporing_id           uuid                                   NOT NULL,
     meldingsreferanse_id uuid REFERENCES melding (meldingsreferanse_id),
     time                 TIMESTAMP WITH TIME ZONE DEFAULT NOW() NOT NULL,
     service              TEXT,
