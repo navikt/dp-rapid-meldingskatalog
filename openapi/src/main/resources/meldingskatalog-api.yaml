@@ -37,21 +37,23 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/Melding'
-  /behov:
-    get:
-      summary: Gir en liste over alle behov
-      operationId: get-behov
+    post:
+      summary: Publiserer en ny melding
+      operationId: post-melding
       tags:
-        - Behov
+        - Melding
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { }
       responses:
-        '200':
-          description: OK
+        '201':
+          description: Meldingen ble publisert
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Behov'
+                $ref: '#/components/schemas/Melding'
   /melding/{meldingsreferanseId}/innhold:
     parameters:
       - name: meldingsreferanseId
@@ -71,6 +73,61 @@ paths:
           content:
             application/json:
               schema: { }
+  /behov:
+    get:
+      summary: Gir en liste over alle behov
+      operationId: get-behov
+      tags:
+        - Behov
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Behov'
+  /behov/{behovId}:
+    get:
+      summary: Gir et bestemt behov
+      operationId: get-behov-id
+      tags:
+        - Behov
+      parameters:
+        - name: behovId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Behov'
+  /behov/{behovId}/republiser:
+    post:
+      summary: Republiserer ett bestemt behov
+      operationId: get-behov-republiser
+      tags:
+        - Behov
+      parameters:
+        - name: behovId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Melding'
   /meldingstype:
     get:
       summary: Gir en liste med alle kjente meldingstyper
@@ -158,6 +215,13 @@ paths:
       operationId: get-system
       tags:
         - System
+      parameters:
+        - in: query
+          name: meldinger
+          schema:
+            type: boolean
+          description: >-
+            Hvis satt til true vil meldinger også bli inkludert i responsen
       #security:
       #  - azureAd: [ ]
       responses:
@@ -191,7 +255,10 @@ components:
         meldinger:
           type: array
           items:
-            $ref: '#/components/schemas/Meldingstype'
+            oneOf:
+              - type: string
+                format: uuid
+              - $ref: '#/components/schemas/Meldingstype'
     Meldingstype:
       description: Meldingstype
       type: object
