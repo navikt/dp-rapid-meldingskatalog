@@ -238,7 +238,7 @@ class RapidMeldingRepositoryPostgres : RapidMeldingRepository {
                 meldingsreferanseId,
             ).map { row ->
                 Sporing(
-                    id = row.uuid("id"),
+                    id = row.uuid("sporing_id"),
                     time = row.localDateTime("time"),
                     service = row.string("service"),
                     instance = row.string("instance"),
