@@ -46,7 +46,8 @@ internal fun Application.meldingskatalogAPI(
     }
 
     install(CallLogging) {
-        this.filter { call ->
+        disableDefaultColors()
+        filter { call ->
             !call.request.path().let { it.startsWith("/isalive") || it.startsWith("/isready") }
         }
     }
