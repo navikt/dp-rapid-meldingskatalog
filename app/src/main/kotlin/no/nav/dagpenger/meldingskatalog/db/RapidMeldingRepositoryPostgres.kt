@@ -21,6 +21,7 @@ class RapidMeldingRepositoryPostgres : RapidMeldingRepository {
     override fun <T : Innholdstype> lagreMelding(melding: RapidMelding<T>) =
         sessionOf(dataSource).use {
             it.transaction { tx ->
+                // Lagre meldingen
                 tx.run(
                     queryOf(
                         //language=PostgreSQL
@@ -41,6 +42,13 @@ class RapidMeldingRepositoryPostgres : RapidMeldingRepository {
                         ),
                     ).asUpdate,
                 )
+
+                // Lagre sporing
+                melding.konvolutt.sporing.forEach { sporing ->
+                    tx.run(lagreSporing(melding.meldingsreferanseId, sporing))
+                }
+
+                // Lagre innholdet
                 melding.innhold.map { innhold: T ->
                     when (innhold) {
                         is HendelseType -> lagreInnholdHendelse(melding, innhold)
@@ -53,6 +61,25 @@ class RapidMeldingRepositoryPostgres : RapidMeldingRepository {
         }.also {
             observers.forEach { observer -> observer.onMessageAdded(melding) }
         }
+
+    private fun lagreSporing(
+        meldingsreferanseId: UUID,
+        sporing: Konvolutt.Sporing,
+    ) = queryOf(
+        //language=PostgreSQL
+        """
+        INSERT INTO sporing (id, time, service, instance, image, meldingsreferanse_id)
+        VALUES (:id, :time, :service, :instance, :image, :meldingsreferanseId)
+        """.trimIndent(),
+        mapOf(
+            "id" to sporing.id,
+            "time" to sporing.time,
+            "service" to sporing.service,
+            "instance" to sporing.instance,
+            "image" to sporing.image,
+            "meldingsreferanseId" to meldingsreferanseId,
+        ),
+    ).asUpdate
 
     private fun <T : Innholdstype> lagreInnholdHendelse(
         melding: RapidMelding<T>,
@@ -112,7 +139,7 @@ class RapidMeldingRepositoryPostgres : RapidMeldingRepository {
                 ).map { row ->
                     val innhold = session.hentInnhold(row.uuid("meldingsreferanse_id"))
                     RapidMelding(
-                        konvolutt = row.konvolutt(),
+                        konvolutt = session.konvolutt(row),
                         innhold = Pakkeinnhold(innhold),
                         json = row.string("data"),
                     )
@@ -133,7 +160,7 @@ class RapidMeldingRepositoryPostgres : RapidMeldingRepository {
                 ).map { row ->
                     val innhold = session.hentInnhold(meldingsreferanseId)
                     RapidMelding(
-                        konvolutt = row.konvolutt(),
+                        konvolutt = session.konvolutt(row),
                         innhold = Pakkeinnhold(innhold),
                         json = row.string("data"),
                     )
@@ -179,12 +206,33 @@ class RapidMeldingRepositoryPostgres : RapidMeldingRepository {
             }.asList,
         )
 
-    private fun Row.konvolutt() =
-        Konvolutt(
-            meldingsreferanseId = uuid("meldingsreferanse_id"),
-            opprettet = localDateTime("opprettet"),
-            eventName = string("event_name"),
-            sporing = emptyList(),
+    private fun Session.konvolutt(row: Row): Konvolutt {
+        val meldingsreferanseId = row.uuid("meldingsreferanse_id")
+        return Konvolutt(
+            meldingsreferanseId = meldingsreferanseId,
+            opprettet = row.localDateTime("opprettet"),
+            eventName = row.string("event_name"),
+            sporing = hentSporing(meldingsreferanseId),
+        )
+    }
+
+    private fun Session.hentSporing(meldingsreferanseId: UUID) =
+        this.run(
+            queryOf(
+                //language=PostgreSQL
+                """
+                SELECT * FROM sporing WHERE meldingsreferanse_id = ? ORDER BY id 
+                """.trimIndent(),
+                meldingsreferanseId,
+            ).map { row ->
+                Konvolutt.Sporing(
+                    id = row.uuid("id"),
+                    time = row.localDateTime("time"),
+                    service = row.string("service"),
+                    instance = row.string("instance"),
+                    image = row.string("image"),
+                )
+            }.asList,
         )
 
     override fun leggTilObserver(observer: RapidMeldingRepositoryObserver) = observers.add(observer)
