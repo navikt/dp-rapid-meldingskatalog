@@ -56,8 +56,8 @@ class RapidMeldingRepositoryPostgres : RapidMeldingRepository {
     private fun Session.lagreSporing(
         meldingsreferanseId: UUID,
         sporing: List<Sporing>,
-    ) = sporing.forEach { sporing ->
-        this.run(lagreSporing(meldingsreferanseId, sporing))
+    ) = sporing.forEach { spor ->
+        this.run(lagreSporing(meldingsreferanseId, spor))
     }
 
     private fun lagreSporing(
@@ -66,11 +66,11 @@ class RapidMeldingRepositoryPostgres : RapidMeldingRepository {
     ) = queryOf(
         //language=PostgreSQL
         """
-        INSERT INTO sporing (id, time, service, instance, image, meldingsreferanse_id)
-        VALUES (:id, :time, :service, :instance, :image, :meldingsreferanseId)
+        INSERT INTO sporing (sporing_id, time, service, instance, image, meldingsreferanse_id)
+        VALUES (:sporing_id, :time, :service, :instance, :image, :meldingsreferanseId)
         """.trimIndent(),
         mapOf(
-            "id" to sporing.id,
+            "sporing_id" to sporing.id,
             "time" to sporing.time,
             "service" to sporing.service,
             "instance" to sporing.instance,
