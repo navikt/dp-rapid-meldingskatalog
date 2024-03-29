@@ -21,46 +21,43 @@ class RapidMeldingRepositoryPostgres : RapidMeldingRepository {
     override fun <T : Innholdstype> lagreMelding(melding: RapidMelding<T>) =
         sessionOf(dataSource).use {
             it.transaction { tx ->
-                // Lagre meldingen
-                tx.run(
-                    queryOf(
-                        //language=PostgreSQL
-                        """
-                        INSERT INTO melding (meldingsreferanse_id, opprettet, event_name, data)
-                        VALUES (:meldingsreferanseId, :opprettet, :eventName, :data)
-                        ON CONFLICT DO NOTHING
-                        """.trimIndent(),
-                        mapOf(
-                            "meldingsreferanseId" to melding.meldingsreferanseId,
-                            "opprettet" to melding.opprettet,
-                            "eventName" to melding.eventName,
-                            "data" to
-                                PGobject().apply {
-                                    type = "json"
-                                    value = melding.json
-                                },
-                        ),
-                    ).asUpdate,
-                )
-
-                // Lagre sporing
-                melding.konvolutt.sporing.forEach { sporing ->
-                    tx.run(lagreSporing(melding.meldingsreferanseId, sporing))
-                }
-
-                // Lagre innholdet
-                melding.innhold.map { innhold: T ->
-                    when (innhold) {
-                        is HendelseType -> lagreInnholdHendelse(melding, innhold)
-                        is BehovType -> lagreInnholdBehov(melding, innhold)
-                        is LøsningType -> lagreInnholdLøsning(melding, innhold)
-                        else -> throw IllegalArgumentException("Ukjent innholdstype")
-                    }
-                }.forEach { query -> tx.run(query) }
+                tx.lagreMelding(melding)
+                tx.lagreSporing(melding.meldingsreferanseId, melding.konvolutt.sporing)
+                tx.lagreInnhold(melding.meldingsreferanseId, melding.innhold)
             }
         }.also {
             observers.forEach { observer -> observer.onMessageAdded(melding) }
         }
+
+    private fun <T : Innholdstype> Session.lagreMelding(melding: RapidMelding<T>) {
+        run(
+            queryOf(
+                //language=PostgreSQL
+                """
+                INSERT INTO melding (meldingsreferanse_id, opprettet, event_name, data)
+                VALUES (:meldingsreferanseId, :opprettet, :eventName, :data)
+                ON CONFLICT DO NOTHING
+                """.trimIndent(),
+                mapOf(
+                    "meldingsreferanseId" to melding.meldingsreferanseId,
+                    "opprettet" to melding.opprettet,
+                    "eventName" to melding.eventName,
+                    "data" to
+                        PGobject().apply {
+                            type = "json"
+                            value = melding.json
+                        },
+                ),
+            ).asUpdate,
+        )
+    }
+
+    private fun Session.lagreSporing(
+        meldingsreferanseId: UUID,
+        sporing: List<Konvolutt.Sporing>,
+    ) = sporing.forEach { sporing ->
+        this.run(lagreSporing(meldingsreferanseId, sporing))
+    }
 
     private fun lagreSporing(
         meldingsreferanseId: UUID,
@@ -81,8 +78,22 @@ class RapidMeldingRepositoryPostgres : RapidMeldingRepository {
         ),
     ).asUpdate
 
-    private fun <T : Innholdstype> lagreInnholdHendelse(
-        melding: RapidMelding<T>,
+    private fun <T> Session.lagreInnhold(
+        meldingsreferanseId: UUID,
+        pakkeinnhold: List<T>,
+    ) {
+        pakkeinnhold.map { innhold ->
+            when (innhold) {
+                is HendelseType -> lagreInnholdHendelse(meldingsreferanseId, innhold)
+                is BehovType -> lagreInnholdBehov(meldingsreferanseId, innhold)
+                is LøsningType -> lagreInnholdLøsning(meldingsreferanseId, innhold)
+                else -> throw IllegalArgumentException("Ukjent innholdstype")
+            }
+        }.forEach { this.run(it) }
+    }
+
+    private fun lagreInnholdHendelse(
+        meldingsreferanseId: UUID,
         innhold: HendelseType,
     ) = queryOf(
         //language=PostgreSQL
@@ -91,13 +102,13 @@ class RapidMeldingRepositoryPostgres : RapidMeldingRepository {
         VALUES (:meldingsreferanseId, :navn)
         """.trimIndent(),
         mapOf(
-            "meldingsreferanseId" to melding.meldingsreferanseId,
+            "meldingsreferanseId" to meldingsreferanseId,
             "navn" to innhold.toString(),
         ),
     ).asUpdate
 
-    private fun <T : Innholdstype> lagreInnholdBehov(
-        melding: RapidMelding<T>,
+    private fun lagreInnholdBehov(
+        meldingsreferanseId: UUID,
         innhold: BehovType,
     ) = queryOf(
         //language=PostgreSQL
@@ -106,14 +117,14 @@ class RapidMeldingRepositoryPostgres : RapidMeldingRepository {
         VALUES (:meldingsreferanseId, :behovId, :behov)
         """.trimIndent(),
         mapOf(
-            "meldingsreferanseId" to melding.meldingsreferanseId,
+            "meldingsreferanseId" to meldingsreferanseId,
             "behovId" to innhold.behovId,
             "behov" to innhold.behov,
         ),
     ).asUpdate
 
-    private fun <T : Innholdstype> lagreInnholdLøsning(
-        melding: RapidMelding<T>,
+    private fun lagreInnholdLøsning(
+        meldingsreferanseId: UUID,
         innhold: LøsningType,
     ) = queryOf(
         //language=PostgreSQL
@@ -122,7 +133,7 @@ class RapidMeldingRepositoryPostgres : RapidMeldingRepository {
         VALUES (:meldingsreferanseId, :behovId, :losning)
         """.trimIndent(),
         mapOf(
-            "meldingsreferanseId" to melding.meldingsreferanseId,
+            "meldingsreferanseId" to meldingsreferanseId,
             "behovId" to innhold.behovId,
             "losning" to innhold.løser,
         ),
