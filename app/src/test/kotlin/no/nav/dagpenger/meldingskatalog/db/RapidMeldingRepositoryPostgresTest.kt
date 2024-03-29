@@ -25,13 +25,11 @@ class RapidMeldingRepositoryPostgresTest {
                 json shouldEqualJson behov.json
                 innhold shouldBe behov.innhold
             }
+
+            with(repository.hentMeldingstyper()) {
+                this shouldHaveSize 2
+                this[0].navn shouldBe "noe_skjedde"
+                this[1].navn shouldBe "behov"
+            }
         }
-
-    @Test
-    fun hentMeldinger() {
-    }
-
-    @Test
-    fun hentMelding() {
-    }
 }

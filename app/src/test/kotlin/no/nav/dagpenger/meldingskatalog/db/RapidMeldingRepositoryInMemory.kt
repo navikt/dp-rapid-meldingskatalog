@@ -21,6 +21,10 @@ class RapidMeldingRepositoryInMemory : RapidMeldingRepository {
 
     override fun leggTilObserver(observer: RapidMeldingRepositoryObserver) = observers.add(observer)
 
+    override fun hentMeldingstyper(): List<Meldingstype> {
+        TODO("Not yet implemented")
+    }
+
     private fun <T : Innholdstype> notifyObservers(message: RapidMelding<T>) {
         observers.forEach { it.onMessageAdded(message) }
     }

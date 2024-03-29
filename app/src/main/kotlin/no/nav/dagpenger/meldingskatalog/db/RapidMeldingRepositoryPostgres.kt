@@ -104,7 +104,7 @@ class RapidMeldingRepositoryPostgres : RapidMeldingRepository {
         """.trimIndent(),
         mapOf(
             "meldingsreferanseId" to meldingsreferanseId,
-            "navn" to innhold.toString(),
+            "navn" to innhold.navn,
         ),
     ).asUpdate
 
@@ -248,4 +248,37 @@ class RapidMeldingRepositoryPostgres : RapidMeldingRepository {
         )
 
     override fun leggTilObserver(observer: RapidMeldingRepositoryObserver) = observers.add(observer)
+
+    override fun hentMeldingstyper(): List<Meldingstype> {
+        return sessionOf(dataSource).use {
+            it.run(
+                queryOf(
+                    //language=PostgreSQL
+                    """
+                    SELECT navn, behov, COUNT(DISTINCT m.meldingsreferanse_id) AS antall 
+                    FROM melding m
+                    LEFT JOIN melding_innhold_hendelse mih ON m.meldingsreferanse_id = mih.meldingsreferanse_id
+                    LEFT JOIN melding_innhold_behov mib ON m.meldingsreferanse_id = mib.meldingsreferanse_id
+                    GROUP BY navn, behov
+                    ORDER BY antall DESC, navn
+                    """.trimIndent(),
+                ).map { row ->
+                    val hendelse = row.stringOrNull("navn")
+                    val behov = row.stringOrNull("behov")
+                    val type =
+                        when (behov == null) {
+                            true -> "behov"
+                            false -> "hendelse"
+                        }
+                    val navn = hendelse ?: behov ?: throw IllegalArgumentException("Ukjent meldingstype")
+                    Meldingstype(
+                        navn = navn,
+                        type = type,
+                        antall = row.int("antall"),
+                        involverteTjenester = emptyList(),
+                    )
+                }.asList,
+            )
+        }
+    }
 }

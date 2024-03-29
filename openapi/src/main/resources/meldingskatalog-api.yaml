@@ -255,10 +255,8 @@ components:
         meldinger:
           type: array
           items:
-            oneOf:
-              - type: string
-                format: uuid
-              - $ref: '#/components/schemas/Meldingstype'
+            type: string
+            format: uuid
     Meldingstype:
       description: Meldingstype
       type: object

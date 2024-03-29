@@ -85,10 +85,15 @@ internal fun Application.meldingskatalogAPI(
             call.respond(behov)
         }
         get("/meldingstype") {
-            val messageTypes = emptyList<MeldingstypeDTO>()
-            /*repository.hentMeldingstyper().map {
-                MeldingstypeDTO(it.navn, it.type, it.antall, it.system.map(::SystemDTO))
-            }*/
+            val messageTypes =
+                rapidMeldingRepository.hentMeldingstyper().map {
+                    MeldingstypeDTO(
+                        it.navn,
+                        it.type,
+                        it.antall,
+                        it.involverteTjenester.map { tjeneste -> SystemDTO(tjeneste.navn, emptyList()) },
+                    )
+                }
             call.respond(messageTypes)
         }
 
