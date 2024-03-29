@@ -13,14 +13,14 @@ import no.nav.dagpenger.meldingskatalog.rivers.LøsningRiver
 import no.nav.helse.rapids_rivers.RapidApplication
 import no.nav.helse.rapids_rivers.RapidsConnection
 
-internal class ApplicationBuilder(configuration: Map<String, String>) : RapidsConnection.StatusListener {
+internal class ApplicationBuilder(private val config: Map<String, String>) : RapidsConnection.StatusListener {
     private val meldingRepository = RapidMeldingRepositoryPostgres()
     private val behovRepository =
         BehovRepositoryPostgres().also {
             meldingRepository.leggTilObserver(BehovSporer(it))
         }
     private val rapidsConnection: RapidsConnection =
-        RapidApplication.Builder(RapidApplication.RapidApplicationConfig.fromEnv(configuration)).apply {
+        RapidApplication.Builder(RapidApplication.RapidApplicationConfig.fromEnv(config)).apply {
             withKtorModule { meldingskatalogAPI(meldingRepository, behovRepository) }
         }.build()
 
@@ -36,7 +36,7 @@ internal class ApplicationBuilder(configuration: Map<String, String>) : RapidsCo
     }
 
     override fun onStartup(rapidsConnection: RapidsConnection) {
-        clean()
+        if (config["CLEAN_ON_STARTUP"] == "true") clean()
         runMigration()
         logger.info { "Starter applikasjonen" }
     }

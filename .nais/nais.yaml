@@ -38,6 +38,8 @@ spec:
       value: earliest
     - name: FLYWAY_CLEAN_DISABLED
       value: "false"
+    - name: CLEAN_ON_STARTUP
+      value: "false"
   kafka:
     pool: {{ kafka_pool }}
   gcp:
