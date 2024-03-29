@@ -259,6 +259,7 @@ class RapidMeldingRepositoryPostgres : RapidMeldingRepository {
                     FROM melding m
                     LEFT JOIN melding_innhold_hendelse mih ON m.meldingsreferanse_id = mih.meldingsreferanse_id
                     LEFT JOIN melding_innhold_behov mib ON m.meldingsreferanse_id = mib.meldingsreferanse_id
+                    WHERE (mih.navn IS NOT NULL OR mib.behov IS NOT NULL)
                     GROUP BY navn, behov
                     ORDER BY antall DESC, navn
                     """.trimIndent(),
