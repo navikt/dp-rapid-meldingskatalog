@@ -2,6 +2,7 @@ package no.nav.dagpenger.meldingskatalog.rivers
 
 import io.kotest.matchers.collections.shouldHaveSingleElement
 import io.kotest.matchers.collections.shouldHaveSize
+import no.nav.dagpenger.meldingskatalog.db.Meldingstype
 import no.nav.dagpenger.meldingskatalog.db.RapidMeldingRepository
 import no.nav.dagpenger.meldingskatalog.db.RapidMeldingRepositoryObserver
 import no.nav.dagpenger.meldingskatalog.fixtures.TestMeldinger.behov
@@ -34,6 +35,10 @@ class RiverTest {
                 meldinger.first { it.meldingsreferanseId == meldingsreferanseId } as RapidMelding<Innholdstype>
 
             override fun leggTilObserver(observer: RapidMeldingRepositoryObserver) = observers.add(observer)
+
+            override fun hentMeldingstyper(): List<Meldingstype> {
+                TODO("Not yet implemented")
+            }
 
             fun reset() = meldinger.clear()
         }

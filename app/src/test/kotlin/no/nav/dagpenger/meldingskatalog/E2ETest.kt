@@ -5,6 +5,7 @@ import io.kotest.matchers.shouldBe
 import no.nav.dagpenger.meldingskatalog.behov.Behov
 import no.nav.dagpenger.meldingskatalog.behov.BehovRepository
 import no.nav.dagpenger.meldingskatalog.behov.BehovSporer
+import no.nav.dagpenger.meldingskatalog.db.Meldingstype
 import no.nav.dagpenger.meldingskatalog.db.Postgres.withMigratedDb
 import no.nav.dagpenger.meldingskatalog.db.RapidMeldingRepository
 import no.nav.dagpenger.meldingskatalog.db.RapidMeldingRepositoryObserver
@@ -61,6 +62,10 @@ class E2ETest {
                 meldinger.first { it.meldingsreferanseId == meldingsreferanseId } as RapidMelding<Innholdstype>
 
             override fun leggTilObserver(observer: RapidMeldingRepositoryObserver) = observers.add(observer)
+
+            override fun hentMeldingstyper(): List<Meldingstype> {
+                TODO("Not yet implemented")
+            }
         }.also {
             it.leggTilObserver(behovSporer)
         }
