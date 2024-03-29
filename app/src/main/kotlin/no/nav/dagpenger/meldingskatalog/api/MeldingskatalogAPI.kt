@@ -45,21 +45,21 @@ internal fun Application.meldingskatalogAPI(
         swaggerUI(path = "openapi", swaggerFile = "meldingskatalog-api.yaml")
 
         get("/melding") {
-            val meldinger = emptyList<MeldingDTO>()
-            rapidMeldingRepository.hentMeldinger().map {
-                MeldingDTO(
-                    meldingsreferanseId = it.meldingsreferanseId,
-                    eventName = it.eventName,
-                    opprettet = it.opprettet,
-                    sporing = it.sporing.toSporingDTO(),
-                    type =
-                        when (it.type) {
-                            is HendelseType -> MeldingTypeDTO.Hendelse
-                            is BehovType -> MeldingTypeDTO.Behov
-                            is LøsningType -> MeldingTypeDTO.Løsning
-                        },
-                )
-            }
+            val meldinger =
+                rapidMeldingRepository.hentMeldinger().map {
+                    MeldingDTO(
+                        meldingsreferanseId = it.meldingsreferanseId,
+                        eventName = it.eventName,
+                        opprettet = it.opprettet,
+                        sporing = it.sporing.toSporingDTO(),
+                        type =
+                            when (it.type) {
+                                is HendelseType -> MeldingTypeDTO.Hendelse
+                                is BehovType -> MeldingTypeDTO.Behov
+                                is LøsningType -> MeldingTypeDTO.Løsning
+                            },
+                    )
+                }
 
             call.respond(meldinger)
         }
