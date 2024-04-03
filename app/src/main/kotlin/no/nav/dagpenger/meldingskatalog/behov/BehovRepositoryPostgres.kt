@@ -58,7 +58,7 @@ class BehovRepositoryPostgres : BehovRepository {
                 session.run(
                     queryOf(
                         //language=PostgreSQL
-                        "SELECT behov_id FROM behov ORDER BY opprettet DESC LIMIT 100",
+                        "SELECT behov_id FROM behov ORDER BY opprettet DESC LIMIT 10",
                     ).map { it.uuid("behov_id") }.asList,
                 )
             }
