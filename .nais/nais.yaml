@@ -52,6 +52,7 @@ spec:
         databases:
           - name: rapid-meldingskatalog
             envVarPrefix: DB
+        cascadingDelete: true
   azure:
     application:
       enabled: true
