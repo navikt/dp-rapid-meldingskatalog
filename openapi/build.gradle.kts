@@ -1,6 +1,6 @@
 plugins {
     kotlin("jvm")
-    id("org.openapi.generator") version "7.11.0"
+    id("org.openapi.generator") version "7.13.0"
     `java-library`
 }
 
